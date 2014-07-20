@@ -22,10 +22,11 @@ logger = logging.getLogger(__name__)
 
 import sys
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
+from PyQt4 import QtCore
+from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
+                        QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton,\
+                        QTextCursor, QApplication
+                        
 import batoto_series_downloader
 import batoto_chapter_downloader
 
@@ -155,7 +156,7 @@ class DownloaderWindow(QMainWindow):
             QtCore.QCoreApplication.processEvents()
             return
             
-        self.chapters_filtered = self.chapters[ch_from:ch_to]
+        self.chapters_filtered = self.chapters[ch_from:ch_to+1]
         
         self.addInfo('Range OK, starting download of '+str(len(self.chapters_filtered))+' chapters...')
         QtCore.QCoreApplication.processEvents()

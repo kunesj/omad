@@ -39,7 +39,7 @@ def download(url, path):
     f.write(requests.get(url).content)
     f.close()
 
-def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
+def getChapter(full_gallery_url, guiprintfcn=None):
     # strip page number etc..
     fgu_spl = full_gallery_url.split('/_/')
     full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
@@ -66,10 +66,10 @@ def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
     img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
     galeryurl =  img_url[0:img_url.rfind('/')]+"/"
 
-    if verbose:
-        print 'Downloading:', ch_name
-        print 'Pages:', galery_size
-        print 'Images url:', galeryurl
+
+    logger.info('Downloading: '+ch_name)
+    logger.info('Pages: '+str(galery_size))
+    logger.info('Images url: '+galeryurl)
 
     # create temp folder for downloads
     foldername="_temp"
@@ -80,8 +80,8 @@ def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
     errors = 0
     for i in range(len(pages)):
         p = pages[i]
-        if verbose:
-            print "Downloading "+str(p)+":",
+        
+        logger.info("Downloading "+str(i+1)+"/"+str(len(pages)))
         if guiprintfcn is not None:
             guiprintfcn("Downloading "+str(i+1)+"/"+str(len(pages)))
             
@@ -91,8 +91,7 @@ def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
         soup = BeautifulSoup(html)
         
         img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
-        if verbose:
-            print 'img_url - '+str(img_url),
+        logger.info(img_url)
         
         if i<10:
             num = '000'+str(i)
@@ -109,19 +108,15 @@ def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
         try:
             download(img_url, img_path)
         except:
-            if verbose:
-                print u"\u274C" # BAD download
+            logger.warning('BAD download for: '+img_url)
             errors+=1
         else:
-            if verbose:
-                print u"\u2713" # OK download
+            logger.info('OK download')
 
-    if verbose:
-        print "Download finished, Failed downloads = "+str(errors)
+    logger.info("Download finished, Failed downloads = "+str(errors))
 
     archive_name = (ch_name+'_['+grp_name+'].zip').replace('/','-')
-    if verbose:
-        print 'Compressing to: '+str(archive_name)
+    logger.info('Compressing to: '+str(archive_name))
     zipf = zipfile.ZipFile(archive_name, 'w')
     zipdir('./'+foldername, zipf)
     zipf.close()
@@ -131,6 +126,10 @@ def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
     return errors, archive_name
 
 if __name__ == "__main__":
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    
     full_gallery_url = raw_input("Enter url of galery you want to download:\n")
-    getChapter(full_gallery_url, verbose=True)
+    getChapter(full_gallery_url)
     raw_input("Finished, press enter")

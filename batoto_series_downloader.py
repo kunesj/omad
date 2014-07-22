@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with Batoto Downloader.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -42,6 +45,10 @@ def getListOfChapters(url):
     return processed_chapters
     
 if __name__ == "__main__":
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel(logging.WARNING)
+    
     full_series_url = raw_input("Enter url of series download:\n")
     processed_chapters = getListOfChapters(full_series_url)
         
@@ -86,7 +93,7 @@ if __name__ == "__main__":
     for ch in filtered_chs:
         print 'Downloading: '+ch[0]
         
-        err, name = batoto_chapter_downloader.getChapter(ch[1], verbose=False)
+        err, name = batoto_chapter_downloader.getChapter(ch[1])
         if err!=0:
             print 'Download finished with errors'
             failed_ch.append(ch)

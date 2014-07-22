@@ -162,7 +162,7 @@ class DownloaderWindow(QMainWindow):
         for ch in self.chapters_filtered:
             self.addInfo('Downloading: '+ch[0])
             
-            err, name = batoto_chapter_downloader.getChapter(ch[1], verbose=True, guiprintfcn=self.addInfo)
+            err, name = batoto_chapter_downloader.getChapter(ch[1], guiprintfcn=self.addInfo)
             if err!=0:
                 self.addInfo('Download finished with errors')
                 failed_ch.append(ch)
@@ -180,6 +180,10 @@ class DownloaderWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    
     app = QApplication(sys.argv)
     dw = DownloaderWindow(None)
     sys.exit(app.exec_())

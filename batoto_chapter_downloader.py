@@ -1,6 +1,5 @@
 #!/usr/bin/python2
 # coding: utf-8
-# needs unix command 'wget' installed
 """
 This file is part of Batoto Downloader.
 
@@ -34,8 +33,13 @@ def zipdir(path, zipf):
     for root, dirs, files in os.walk(path):
         for file in files:
             zipf.write(os.path.join(root, file))
+            
+def download(url, path):
+    f = open(path,'wb')
+    f.write(requests.get(url).content)
+    f.close()
 
-def getChapter(full_gallery_url, verbose=True):
+def getChapter(full_gallery_url, verbose=True, guiprintfcn=None):
     # strip page number etc..
     fgu_spl = full_gallery_url.split('/_/')
     full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
@@ -78,6 +82,9 @@ def getChapter(full_gallery_url, verbose=True):
         p = pages[i]
         if verbose:
             print "Downloading "+str(p)+":",
+        if guiprintfcn is not None:
+            guiprintfcn("Downloading "+str(i+1)+"/"+str(len(pages)))
+            
         page_url = full_gallery_url+'/'+str(p)
         r = requests.get(page_url)
         html = unicode(r.text)
@@ -97,16 +104,18 @@ def getChapter(full_gallery_url, verbose=True):
             num = str(i)
         
         img_filename = num+'.'+img_url.split('.')[-1]
-        result = system("wget -q -O './"+foldername+"/"+img_filename+"' '"+img_url+"'")
+        img_path = './'+foldername+'/'+img_filename
         
-        if result == 2048: ### BUG!!! If download fails 0 byte file is still created
+        try:
+            download(img_url, img_path)
+        except:
             if verbose:
                 print u"\u274C" # BAD download
             errors+=1
         else:
             if verbose:
                 print u"\u2713" # OK download
-    
+
     if verbose:
         print "Download finished, Failed downloads = "+str(errors)
 

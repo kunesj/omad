@@ -113,10 +113,10 @@ class DownloaderWindow(QMainWindow):
         sb.setValue(sb.maximum())
         
         QtCore.QCoreApplication.processEvents()
+        QtCore.QCoreApplication.processEvents()
         
     def getChaptersList(self):
         self.addInfo('Getting list of chapters...')
-        QtCore.QCoreApplication.processEvents()
         
         url = str(self.line_url.text())
         
@@ -137,7 +137,6 @@ class DownloaderWindow(QMainWindow):
         self.combo_to.setCurrentIndex(len(self.chapters)-1)
             
         self.addInfo('Chapter list loaded')
-        QtCore.QCoreApplication.processEvents()
         
         self.combo_from.setEnabled(True)
         self.combo_to.setEnabled(True)
@@ -146,47 +145,38 @@ class DownloaderWindow(QMainWindow):
         
     def downloadChapters(self):
         self.addInfo('Checking chapter range')
-        QtCore.QCoreApplication.processEvents()
         
         ch_from = self.combo_from.currentIndex()
         ch_to = self.combo_to.currentIndex()
         
         if ch_from>ch_to:
             self.addInfo('Bad range. Cant download backwards!')
-            QtCore.QCoreApplication.processEvents()
             return
             
         self.chapters_filtered = self.chapters[ch_from:ch_to+1]
         
         self.addInfo('Range OK, starting download of '+str(len(self.chapters_filtered))+' chapters...')
-        QtCore.QCoreApplication.processEvents()
         
         # Download chapters
         failed_ch = []
         for ch in self.chapters_filtered:
             self.addInfo('Downloading: '+ch[0])
-            QtCore.QCoreApplication.processEvents()
             
-            err, name = batoto_chapter_downloader.getChapter(ch[1], verbose=True)
+            err, name = batoto_chapter_downloader.getChapter(ch[1], verbose=True, guiprintfcn=self.addInfo)
             if err!=0:
                 self.addInfo('Download finished with errors')
-                QtCore.QCoreApplication.processEvents()
                 failed_ch.append(ch)
             
             self.addInfo('Saved: '+name)
-            QtCore.QCoreApplication.processEvents()
         
         # Finished        
         self.addInfo('Download Finished!!!')
-        QtCore.QCoreApplication.processEvents()
         
         # Print failed downloads
         if len(failed_ch)>0:
             self.addInfo('\nChapters with failed downloads:')
-            QtCore.QCoreApplication.processEvents()
             for f in failed_ch:
                 self.addInfo(f[0])
-                QtCore.QCoreApplication.processEvents()
 
 
 if __name__ == "__main__":

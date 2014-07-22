@@ -128,7 +128,7 @@ def getChapter(full_gallery_url, guiprintfcn=None):
 if __name__ == "__main__":
     logging.basicConfig()
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     
     full_gallery_url = raw_input("Enter url of galery you want to download:\n")
     getChapter(full_gallery_url)

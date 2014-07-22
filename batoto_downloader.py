@@ -31,7 +31,7 @@ import batoto_series_downloader
 import batoto_chapter_downloader
 
 class DownloaderWindow(QMainWindow):
-    def __init__(self, gallerypath):
+    def __init__(self):
         QMainWindow.__init__(self)
         
         self.chapters = None
@@ -182,9 +182,9 @@ class DownloaderWindow(QMainWindow):
 if __name__ == "__main__":
     logging.basicConfig()
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     
     app = QApplication(sys.argv)
-    dw = DownloaderWindow(None)
+    dw = DownloaderWindow()
     sys.exit(app.exec_())
 

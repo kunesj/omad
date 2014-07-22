@@ -74,7 +74,8 @@ def getChapter(full_gallery_url, verbose=True):
     os.makedirs('./'+foldername)
 
     errors = 0
-    for p in pages:
+    for i in range(len(pages)):
+        p = pages[i]
         if verbose:
             print "Downloading "+str(p)+":",
         page_url = full_gallery_url+'/'+str(p)
@@ -86,7 +87,16 @@ def getChapter(full_gallery_url, verbose=True):
         if verbose:
             print 'img_url - '+str(img_url),
         
-        img_filename = img_url.split('/')[-1]
+        if i<10:
+            num = '000'+str(i)
+        elif i<100:
+            num = '00'+str(i)
+        elif i<1000:
+            num = '0'+str(i)
+        else:
+            num = str(i)
+        
+        img_filename = num+'.'+img_url.split('.')[-1]
         result = system("wget -q -O './"+foldername+"/"+img_filename+"' '"+img_url+"'")
         
         if result == 2048: ### BUG!!! If download fails 0 byte file is still created

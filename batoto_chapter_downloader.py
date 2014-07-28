@@ -44,7 +44,7 @@ def getChapter(full_gallery_url, guiprintfcn=None):
     fgu_spl = full_gallery_url.split('/_/')
     full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
 
-    r = requests.get(full_gallery_url)
+    r = requests.get(full_gallery_url, timeout=30)
     html = unicode(r.text)
     soup = BeautifulSoup(html)
 
@@ -86,7 +86,7 @@ def getChapter(full_gallery_url, guiprintfcn=None):
             guiprintfcn("Downloading "+str(i+1)+"/"+str(len(pages)))
             
         page_url = full_gallery_url+'/'+str(p)
-        r = requests.get(page_url)
+        r = requests.get(page_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
         

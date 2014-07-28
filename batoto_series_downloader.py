@@ -26,7 +26,7 @@ from bs4 import BeautifulSoup
 import batoto_chapter_downloader
 
 def getListOfChapters(url):
-    r = requests.get(url)
+    r = requests.get(url, timeout=30)
     html = unicode(r.text)
     soup = BeautifulSoup(html)
 

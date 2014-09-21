@@ -118,7 +118,7 @@ class DownloaderWindow(QMainWindow):
     def getChaptersList(self):
         self.addInfo('Getting list of chapters...')
         
-        url = str(self.line_url.text())
+        url = str(self.line_url.text()).strip()
         
         try:
             chapters = batoto_series_downloader.getListOfChapters(url)

@@ -49,7 +49,7 @@ def getChapter(full_gallery_url, guiprintfcn=None):
     html = unicode(r.text)
     soup = BeautifulSoup(html)
     
-    if ("bato.to" in full_gallery_url) or ("batoto.com" in full_gallery_url):
+    if ('bato.to' in full_gallery_url) or ('batoto.com' in full_gallery_url):
         div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
 
         series_name = div_modbar.find('a').text.replace('/',' ')
@@ -68,14 +68,12 @@ def getChapter(full_gallery_url, guiprintfcn=None):
         img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
         galeryurl =  img_url[0:img_url.rfind('/')]+"/"
         
-    elif "kissmanga.com" in full_gallery_url:
-        series_name = soup.body.find('div', attrs={'id':'navsubbar'}).find('a').get('href').split('/')[-1]
+    elif 'kissmanga.com' in full_gallery_url:
+        series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
         
-        select_ch = soup.body.find('select', attrs={'class':'selectChapter'})
-        ch_name = select_ch.find('option', attrs={'selected':''}).text.strip()
-        ch_name = (series_name+' - '+ch_name).replace(' ','_').encode('utf-8')
+        ch_name = (series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]).replace(' ','_').encode('utf-8')
         
-        grp_name = ""
+        grp_name = ''
         
         pages = []
         scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})

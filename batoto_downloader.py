@@ -122,8 +122,9 @@ class DownloaderWindow(QMainWindow):
         
         try:
             chapters = batoto_series_downloader.getListOfChapters(url)
-        except:
+        except Exception, e:
             self.addInfo('Bad URL!!!')
+            logger.error(e)
             QtCore.QCoreApplication.processEvents()
             return
             
@@ -140,7 +141,6 @@ class DownloaderWindow(QMainWindow):
         
         self.combo_from.setEnabled(True)
         self.combo_to.setEnabled(True)
-        self.btn_getlist.setEnabled(False)
         self.btn_download.setEnabled(True)
         
     def downloadChapters(self):

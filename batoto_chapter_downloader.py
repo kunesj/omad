@@ -40,32 +40,58 @@ def download(url, path):
     f.close()
 
 def getChapter(full_gallery_url, guiprintfcn=None):
-    # strip page number etc..
-    fgu_spl = full_gallery_url.split('/_/')
-    full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
-
+    if ("bato.to" in full_gallery_url) or ("batoto.com" in full_gallery_url):
+        # strip page number etc..
+        fgu_spl = full_gallery_url.split('/_/')
+        full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
+    
     r = requests.get(full_gallery_url, timeout=30)
     html = unicode(r.text)
     soup = BeautifulSoup(html)
-
-    div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
-
-    series_name = div_modbar.find('a').text.replace('/',' ')
-    ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-    ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).replace(' ','_').encode('utf-8')
     
-    grp_select = div_modbar.find('select', attrs={'name':'group_select'})
-    grp_name = (grp_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
-    # remove language from group
-    grp_name = '-'.join(grp_name.split('-')[:-1]).strip().replace(' ','_')
+    if ("bato.to" in full_gallery_url) or ("batoto.com" in full_gallery_url):
+        div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
 
-    pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
-    pages = [x.strip() for x in pages]
-    galery_size = len(pages)
+        series_name = div_modbar.find('a').text.replace('/',' ')
+        ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
+        ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).replace(' ','_').encode('utf-8')
+        
+        grp_select = div_modbar.find('select', attrs={'name':'group_select'})
+        grp_name = (grp_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
+        # remove language from group
+        grp_name = '-'.join(grp_name.split('-')[:-1]).strip().replace(' ','_')
 
-    img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
-    galeryurl =  img_url[0:img_url.rfind('/')]+"/"
+        pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
+        pages = [x.strip() for x in pages]
+        galery_size = len(pages)
 
+        img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
+        galeryurl =  img_url[0:img_url.rfind('/')]+"/"
+        
+    elif "kissmanga.com" in full_gallery_url:
+        series_name = soup.body.find('div', attrs={'id':'navsubbar'}).find('a').get('href').split('/')[-1]
+        
+        select_ch = soup.body.find('select', attrs={'class':'selectChapter'})
+        ch_name = select_ch.find('option', attrs={'selected':''}).text.strip()
+        ch_name = (series_name+' - '+ch_name).replace(' ','_').encode('utf-8')
+        
+        grp_name = ""
+        
+        pages = []
+        scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
+        for script in scripts:
+            if script.text.strip().startswith('var lstImages = new Array();'):
+                lines = script.text.split('\n')
+                for l in lines:
+                    if l.strip().startswith('lstImages.push('):
+                        pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
+        
+        galery_size = len(pages)
+        
+        galeryurl = full_gallery_url
+        
+    else:
+        raise Exception
 
     logger.info('Downloading: '+ch_name)
     logger.info('Pages: '+str(galery_size))
@@ -79,18 +105,25 @@ def getChapter(full_gallery_url, guiprintfcn=None):
 
     errors = 0
     for i in range(len(pages)):
-        p = pages[i]
-        
         logger.info("Downloading "+str(i+1)+"/"+str(len(pages)))
         if guiprintfcn is not None:
             guiprintfcn("Downloading "+str(i+1)+"/"+str(len(pages)))
             
-        page_url = full_gallery_url+'/'+str(p)
-        r = requests.get(page_url, timeout=30)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        if ("bato.to" in full_gallery_url) or ("batoto.com" in full_gallery_url):
+            p = pages[i]
+            page_url = full_gallery_url+'/'+str(p)
+            r = requests.get(page_url, timeout=30)
+            html = unicode(r.text)
+            soup = BeautifulSoup(html)
+            
+            img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
+            img_ext = img_url.split('.')[-1]
+            
+        elif "kissmanga.com" in full_gallery_url:
+            img_url = pages[i]
+            print img_url
+            img_ext = img_url.split('.')[-1].split('?')[0]
         
-        img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
         logger.info(img_url)
         
         if i<10:
@@ -102,20 +135,25 @@ def getChapter(full_gallery_url, guiprintfcn=None):
         else:
             num = str(i)
         
-        img_filename = num+'.'+img_url.split('.')[-1]
+        img_filename = num+'.'+img_ext
         img_path = './'+foldername+'/'+img_filename
         
         try:
             download(img_url, img_path)
-        except:
+        except Exception, e:
             logger.warning('BAD download for: '+img_url)
+            logger.warning(e)
             errors+=1
         else:
             logger.info('OK download')
+                
+
 
     logger.info("Download finished, Failed downloads = "+str(errors))
-
-    archive_name = (ch_name+'_['+grp_name+'].zip').replace('/','-')
+    
+    if grp_name != '':
+        grp_name = '_['+grp_name+']'
+    archive_name = (ch_name+grp_name+'.zip').replace('/','-')
     logger.info('Compressing to: '+str(archive_name))
     zipf = zipfile.ZipFile(archive_name, 'w')
     zipdir('./'+foldername, zipf)

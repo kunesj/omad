@@ -26,6 +26,16 @@ from bs4 import BeautifulSoup
 import batoto_chapter_downloader
 
 def getListOfChapters(url):
+    if ("bato.to" in url) or ("batoto.com" in url):
+        processed_chapters = getListOfChapters_batoto(url)
+    elif "kissmanga.com" in url:
+        processed_chapters = getListOfChapters_kissmanga(url)
+    else:
+        raise Exception
+    
+    return processed_chapters
+
+def getListOfChapters_batoto(url):
     r = requests.get(url, timeout=30)
     html = unicode(r.text)
     soup = BeautifulSoup(html)
@@ -38,6 +48,26 @@ def getListOfChapters(url):
         tds = ch.findAll('td')
         name = tds[0].text.strip()
         href = tds[0].find('a').get('href')
+        processed_chapters.append([name, href])
+        
+    processed_chapters.reverse()
+    
+    return processed_chapters
+    
+def getListOfChapters_kissmanga(url):
+    r = requests.get(url, timeout=30)
+    html = unicode(r.text)
+    soup = BeautifulSoup(html)
+
+    table_ch = soup.body.find('table', attrs={'class':'listing'})
+    en_chs = table_ch.findAll('a')
+
+    processed_chapters = []
+    for ch in en_chs:
+        name = ch.get('title').strip()
+        href = ch.get('href')
+        if not 'kissmanga.com' in href:
+            href = 'http://kissmanga.com/'+href
         processed_chapters.append([name, href])
         
     processed_chapters.reverse()

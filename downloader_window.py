@@ -102,7 +102,7 @@ class DownloaderWindow(QMainWindow):
         
         # add layout to main window
         cw.setLayout(layout_main)
-        self.setWindowTitle('Batoto Downloader')
+        self.setWindowTitle('Manga Downloader')
         self.show()
         
     def addInfo(self, s='Testing printing...'):

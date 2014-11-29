@@ -1,20 +1,20 @@
 #!/usr/bin/python2
 # coding: utf-8
 """
-This file is part of Batoto Downloader.
+This file is part of Manga Downloader.
 
-Batoto Downloader is free software: you can redistribute it and/or modify
+Manga Downloader is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 any later version.
 
-Batoto Downloader is distributed in the hope that it will be useful,
+Manga Downloader is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Batoto Downloader.  If not, see <http://www.gnu.org/licenses/>.
+along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -30,9 +30,13 @@ from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
 import batoto_series_downloader
 import batoto_chapter_downloader
 
+from download_controller import DownloadController
+
 class DownloaderWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
+        
+        self.down_control = DownloadController(self.addInfo)
         
         self.chapters = None
         self.chapters_filtered = None
@@ -120,15 +124,10 @@ class DownloaderWindow(QMainWindow):
         
         url = str(self.line_url.text()).strip()
         
-        try:
-            chapters = batoto_series_downloader.getListOfChapters(url)
-        except Exception, e:
-            self.addInfo('Bad URL!!!')
-            logger.error(e)
-            QtCore.QCoreApplication.processEvents()
-            return
+        if not self.down_control.setSeriesUrl(url):
+            return # bad url
             
-        self.chapters = chapters
+        self.chapters = self.down_control.getChaptersList()
         
         for c in self.chapters:
             self.combo_from.addItem(c[0])
@@ -152,39 +151,16 @@ class DownloaderWindow(QMainWindow):
         if ch_from>ch_to:
             self.addInfo('Bad range. Cant download backwards!')
             return
+        else:
+            self.addInfo('Range OK, starting download of '+str((ch_to-ch_from)+1)+' chapters...')
             
-        self.chapters_filtered = self.chapters[ch_from:ch_to+1]
-        
-        self.addInfo('Range OK, starting download of '+str(len(self.chapters_filtered))+' chapters...')
-        
-        # Download chapters
-        failed_ch = []
-        for ch in self.chapters_filtered:
-            self.addInfo('Downloading: '+ch[0])
-            
-            err, name = batoto_chapter_downloader.getChapter(ch[1], guiprintfcn=self.addInfo)
-            if err!=0:
-                self.addInfo('Download finished with errors')
-                failed_ch.append(ch)
-            
-            self.addInfo('Saved: '+name)
+        results = self.down_control.downloadChapterRange(ch_from, ch_to)
         
         # Finished        
         self.addInfo('Download Finished!!!')
         
         # Print failed downloads
-        if len(failed_ch)>0:
-            self.addInfo('\nChapters with failed downloads:')
-            for f in failed_ch:
-                self.addInfo(f[0])
-
-
-if __name__ == "__main__":
-    logging.basicConfig()
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    
-    app = QApplication(sys.argv)
-    dw = DownloaderWindow()
-    sys.exit(app.exec_())
-
+        self.addInfo('\nChapters with failed downloads:')  
+        for i, r in enumerate(results):
+            if r is False:
+                self.addInfo(self.chapters[i+ch_from][0])

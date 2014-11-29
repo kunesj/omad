@@ -1,13 +1,13 @@
-Batoto Downloader
+Manga Downloader
 =================
 
-Downloads chapters from batoto.net
+Downloads chapters from online manga reading sites
 
 Install on Linux (Debian/Ubuntu/Mint)
 -------
 Get zipped source and extract it anywhere you want:
 
-    https://github.com/kunesj/batoto-downloader
+    https://github.com/kunesj/manga_downloader
 
 Install required dependencies:
 
@@ -18,7 +18,7 @@ Install on Windows
 -------
 Get zipped source and extract it anywhere you want:
 
-    https://github.com/kunesj/batoto-downloader
+    https://github.com/kunesj/manga_downloader
     
 Install Python 2, setupTools, pip and PyQt4:
 

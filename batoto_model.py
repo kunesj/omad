@@ -157,6 +157,7 @@ class BatotoModel():
         if grp_name != '':
             grp_name = '_['+grp_name+']'
         archive_name = (ch_name+grp_name+'.zip').replace('/','-')
+        self.gui_info_fcn('Compressing to: '+str(archive_name))
         logger.info('Compressing to: '+str(archive_name))
         zipf = zipfile.ZipFile(archive_name, 'w')
         self.zipdir('./'+foldername, zipf)

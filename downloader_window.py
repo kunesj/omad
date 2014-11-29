@@ -26,9 +26,6 @@ from PyQt4 import QtCore
 from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
                         QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton,\
                         QTextCursor, QApplication
-                        
-import batoto_series_downloader
-import batoto_chapter_downloader
 
 from download_controller import DownloadController
 

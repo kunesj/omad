@@ -20,12 +20,10 @@ along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-
 from PyQt4 import QtCore
 from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
                         QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton,\
-                        QTextCursor, QApplication
+                        QTextCursor
 
 from download_controller import DownloadController
 

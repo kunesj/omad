@@ -20,14 +20,10 @@ along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 logger = logging.getLogger(__name__)
 
-import os
-from os import system
-import shutil
-from random import randint
-import zipfile
-
 import requests
 from bs4 import BeautifulSoup
+
+from archive_controller import ArchiveController
 
 def defaultInfoFcn(s='Testing printing...'):
     logger.info(s)
@@ -55,16 +51,6 @@ class BatotoModel():
         processed_chapters.reverse()
         
         return processed_chapters
-        
-    def zipdir(self, path, zipf):
-        for root, dirs, files in os.walk(path):
-            for file in files:
-                zipf.write(os.path.join(root, file))
-                
-    def download(self, url, path):
-        f = open(path,'wb')
-        f.write(requests.get(url).content)
-        f.close()
         
     def downloadChapter(self, chapter):
         """
@@ -105,10 +91,8 @@ class BatotoModel():
         logger.info('Images url: '+galeryurl)
 
         # create temp folder for downloads
-        foldername="_temp"
-        while os.path.exists('./'+foldername):
-            foldername=foldername+str(randint(0,9))
-        os.makedirs('./'+foldername)
+        ac = ArchiveController()
+        ac.mkdir()
 
         errors = 0
         for i in range(len(pages)):
@@ -139,10 +123,9 @@ class BatotoModel():
                 num = str(i)
             
             img_filename = num+'.'+img_ext
-            img_path = './'+foldername+'/'+img_filename
             
             try:
-                self.download(img_url, img_path)
+                ac.download(img_url, img_filename)
             except Exception, e:
                 logger.warning('BAD download for: '+img_url)
                 logger.warning(e)
@@ -150,8 +133,7 @@ class BatotoModel():
             else:
                 logger.info('OK download')
                     
-
-
+                    
         logger.info("Download finished, Failed downloads = "+str(errors))
         
         if grp_name != '':
@@ -159,11 +141,9 @@ class BatotoModel():
         archive_name = (ch_name+grp_name+'.zip').replace('/','-')
         self.gui_info_fcn('Compressing to: '+str(archive_name))
         logger.info('Compressing to: '+str(archive_name))
-        zipf = zipfile.ZipFile(archive_name, 'w')
-        self.zipdir('./'+foldername, zipf)
-        zipf.close()
-
-        shutil.rmtree('./'+foldername)
+        ac.zipdir(archive_name)
+        
+        ac.rmdir()
         
         if errors>0:
             return False

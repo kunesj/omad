@@ -43,8 +43,8 @@ class DownloadController():
         else:
             self.webpage_model = None
             self.chapters = []
-            logger.error(e)
-            self.gui_info_fcn('Bad url!')
+            logger.debug('Unsupported url!')
+            self.gui_info_fcn('Unsupported url!')
             return False
         
         try:

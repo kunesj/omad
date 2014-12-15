@@ -3,6 +3,12 @@ Manga Downloader
 
 Downloads chapters from online manga reading sites
 
+Supported sites:
+
+    bato.to
+    kissmanga.com
+    mangafox.me
+
 Install on Linux (Debian/Ubuntu/Mint)
 -------
 Get zipped source and extract it anywhere you want:

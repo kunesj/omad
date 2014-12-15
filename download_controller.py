@@ -19,9 +19,11 @@ along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 logger = logging.getLogger(__name__)
+import traceback
 
 from batoto_model import BatotoModel
 from kissmanga_model import KissmangaModel
+from mangafox_model import MangafoxModel
 
 def defaultInfoFcn(s='Testing printing...'):
     logger.info(s)
@@ -40,6 +42,9 @@ class DownloadController():
         elif "kissmanga.com" in url:
             self.webpage_model = KissmangaModel(url, self.gui_info_fcn)
             self.gui_info_fcn('Detected kissmanga url')
+        elif "mangafox.me" in url:
+            self.webpage_model = MangafoxModel(url, self.gui_info_fcn)
+            self.gui_info_fcn('Detected mangafox url')
         else:
             self.webpage_model = None
             self.chapters = []
@@ -52,7 +57,7 @@ class DownloadController():
         except Exception,e:
             self.webpage_model = None
             self.chapters = []
-            logger.error(e)
+            logger.error(traceback.print_exc())
             self.gui_info_fcn('Error when downloading list of chapters! wrong url?')
             return False
             

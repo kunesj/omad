@@ -19,6 +19,7 @@ along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 logger = logging.getLogger(__name__)
+import traceback
 
 import requests
 from bs4 import BeautifulSoup
@@ -114,7 +115,7 @@ class KissmangaModel():
                 ac.download(img_url, img_filename)
             except Exception, e:
                 logger.warning('BAD download for: '+img_url)
-                logger.warning(e)
+                logger.warning(traceback.print_exc())
                 errors+=1
             else:
                 logger.info('OK download')

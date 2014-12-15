@@ -19,6 +19,7 @@ along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 logger = logging.getLogger(__name__)
+import traceback
 
 import os
 import shutil

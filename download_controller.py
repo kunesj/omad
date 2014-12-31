@@ -25,8 +25,11 @@ from batoto_model import BatotoModel
 from kissmanga_model import KissmangaModel
 from mangafox_model import MangafoxModel
 
-def defaultInfoFcn(s='Testing printing...'):
-    logger.info(s)
+def defaultInfoFcn(s='Testing printing...', exception=False):
+    if exception:
+        logger.exception(s)
+    else:
+        logger.info(s)
 
 class DownloadController():
     def __init__(self, gui_info_fcn=defaultInfoFcn):
@@ -57,8 +60,7 @@ class DownloadController():
         except Exception,e:
             self.webpage_model = None
             self.chapters = []
-            logger.error(traceback.print_exc())
-            self.gui_info_fcn('Error when downloading list of chapters! wrong url?')
+            self.gui_info_fcn('Error when downloading list of chapters! wrong url?', True)
             return False
             
         return True

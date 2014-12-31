@@ -26,8 +26,11 @@ from bs4 import BeautifulSoup
 
 from archive_controller import ArchiveController
 
-def defaultInfoFcn(s='Testing printing...'):
-    logger.info(s)
+def defaultInfoFcn(s='Testing printing...', exception=False):
+    if exception:
+        logger.exception(s)
+    else:
+        logger.info(s)
 
 class BatotoModel():
     def __init__(self, series_url, gui_info_fcn=defaultInfoFcn):
@@ -104,7 +107,13 @@ class BatotoModel():
             page_url = full_gallery_url+'/'+str(p)+'?supress_webtoon=t'
             logger.info("Page url: "+page_url)
             
-            r = requests.get(page_url, timeout=30)
+            try:
+                r = requests.get(page_url, timeout=30)
+            except Exception, e:
+                logger.exception('BAD page download for: '+page_url)
+                errors+=1
+                continue
+                
             html = unicode(r.text)
             soup = BeautifulSoup(html)
             
@@ -128,8 +137,7 @@ class BatotoModel():
             try:
                 ac.download(img_url, img_filename)
             except Exception, e:
-                logger.warning('BAD download for: '+img_url)
-                logger.warning(traceback.print_exc())
+                logger.exception('BAD download for: '+img_url)
                 errors+=1
             else:
                 logger.info('OK download')

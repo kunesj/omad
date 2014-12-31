@@ -29,7 +29,7 @@ from downloader_window import DownloaderWindow
 def main():
     logging.basicConfig()
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     
     app = QApplication(sys.argv)
     dw = DownloaderWindow()

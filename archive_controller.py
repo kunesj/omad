@@ -49,11 +49,27 @@ class ArchiveController():
         self.path = None
         
     def zipdir(self, archive_name, archive_path='./'):
+        archive_name = self.sanitize_filename(archive_name)
         zipf = zipfile.ZipFile(os.path.join(archive_path, archive_name), 'w')
         for root, dirs, files in os.walk(self.path):
             for file in files:
                 zipf.write(os.path.join(root, file))
         zipf.close()
+        
+    def sanitize_filename(self, filename):
+        # strip white characters from start/end
+        filename = filename.strip()
+
+        # replace ntfs illegal characters
+        illegal = ['<', '>', ':', '"', '/', '\\', '|', '?', '*']
+        for ch in illegal:
+            if ch in filename:
+                filename = filename.replace(ch, "_")
+                
+        # replace tab with space
+        filename = filename.replace("\t", " ")
+        
+        return filename
                 
     def download(self, url, filename):
         f = open(os.path.join(self.path, filename),'wb')

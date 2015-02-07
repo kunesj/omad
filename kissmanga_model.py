@@ -128,7 +128,8 @@ class KissmangaModel():
         
         if grp_name != '':
             grp_name = '_['+grp_name+']'
-        archive_name = (ch_name+grp_name+'.zip').replace('/','-')
+        archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
+        
         self.gui_info_fcn('Compressing to: '+str(archive_name))
         logger.info('Compressing to: '+str(archive_name))
         ac.zipdir(archive_name)

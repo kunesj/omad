@@ -21,19 +21,107 @@ import logging
 logger = logging.getLogger(__name__)
 
 import sys
+import argparse
 
 from PyQt4.QtGui import QApplication
 
 from downloader_window import DownloaderWindow
+from download_controller import DownloadController
+
+def print_info(s):
+    print s
+
+def nogui(args):
+    dc = DownloadController(print_info)
+    
+    print "Downloading gallery info for: "+args.url
+
+    if not dc.setSeriesUrl(args.url):
+        print "Wrong url! Exiting..."
+        sys.exit(2)
+    chapter_list = dc.getChaptersList()
+    
+    if args.list:
+        print "Printing list of chapters..."
+        for i in range(len(chapter_list)):
+            print str(i)+" - "+chapter_list[i][0] 
+        print "Exiting..."
+        sys.exit(0)
+
+    if args.range is None or len(args.range)!=2:
+        print "Incorrect range argument, exiting..."
+        sys.exit(2)
+    
+    if args.range[1]<0:
+        args.range[1] = len(chapter_list)
+    else:
+        args.range[1] = args.range[1]+1
+
+    try:
+        c_range = chapter_list[args.range[0]:args.range[1]]
+    except Exception, e:
+        print "Bad range!", e
+        print "Exiting..."
+        sys.exit(2)
+
+    if len(c_range)==0:
+        print "Nothing to download, exiting..."
+        sys.exit(0)
+
+    print "Starting download of "+str(len(c_range))+" chapters..."
+    print "from: "+c_range[0][0]
+    print "to: "+c_range[-1][0]
+
+    results = dc.downloadChapterRange(args.range[0], args.range[1]-1)
+    print 'Download Finished!!!'
+
+    # Print failed downloads
+    print '\nChapters with failed downloads:'
+    for i, r in enumerate(results):
+        if r is False:
+            print chapter_list[i+args.range[0]][0]
+
 
 def main():
     logging.basicConfig()
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    
-    app = QApplication(sys.argv)
-    dw = DownloaderWindow()
-    sys.exit(app.exec_())
+    logger.setLevel(logging.WARNING)    
+
+    parser = argparse.ArgumentParser(
+        description='Manga downloader'
+    )
+    parser.add_argument(
+        '-u', '--url',
+        default=None,
+        help='Url of manga galllery')
+    parser.add_argument(
+        '-r', '--range',
+        default=None,
+        type=int, metavar='N', nargs='+',
+        help='Range of chapters to download [0 -1]')
+    parser.add_argument(
+       '--nogui',
+        action='store_true',
+        help='Disable GUI')
+    parser.add_argument(
+        '-d', '--debug',
+        action='store_true',
+        help='Debug mode')
+    parser.add_argument(
+        '-l', '--list',
+        action='store_true',
+        help='List chapters and exit. Used for finding download range')
+    args = parser.parse_args()
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
+    if args.nogui:
+        nogui(args)
+    else:
+        app = QApplication(sys.argv)
+        dw = DownloaderWindow()
+        sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()

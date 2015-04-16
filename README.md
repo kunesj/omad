@@ -8,6 +8,8 @@ Supported sites:
     bato.to
     kissmanga.com
     mangafox.me
+    
+![ScreenShot](https://raw.github.com/kunesj/manga_downloader/master/doc/manga-downloader.png)
 
 Install on Linux (Debian/Ubuntu/Mint)
 -------

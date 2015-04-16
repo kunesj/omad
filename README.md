@@ -1,15 +1,28 @@
 Manga Downloader
 =================
 
-Downloads chapters from online manga reading sites
+Simple application for downloading chapters from online manga reading sites.
+
+![ScreenShot](https://raw.github.com/kunesj/manga_downloader/master/doc/manga-downloader.png)
 
 Supported sites:
 
     bato.to
     kissmanga.com
     mangafox.me
-    
-![ScreenShot](https://raw.github.com/kunesj/manga_downloader/master/doc/manga-downloader.png)
+
+Optional commandline parameters:
+
+      -h, --help            show this help message and exit
+      -u URL, --url URL     Url of manga galllery
+      -r N [N ...], --range N [N ...]
+                            Range of chapters to download [0 -1]
+      --nogui               Disable GUI
+      -d, --debug           Debug mode
+      -l, --list            List chapters and exit. Used for finding download
+                            range
+
+
 
 Install on Linux (Debian/Ubuntu/Mint)
 -------

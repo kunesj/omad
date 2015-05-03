@@ -105,6 +105,7 @@ class MangafoxModel():
                 r = requests.get(pages[i], timeout=30)
             except Exception, e:
                 logger.exception('BAD page download for: '+pages[i])
+                self.gui_info_fcn("Error downloading page html")
                 errors+=1
                 continue
             
@@ -131,6 +132,7 @@ class MangafoxModel():
                 ac.download(img_url, img_filename)
             except Exception, e:
                 logger.exception('BAD download for: '+img_url)
+                self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
                 logger.info('OK download')

@@ -111,6 +111,7 @@ class BatotoModel():
                 r = requests.get(page_url, timeout=30)
             except Exception, e:
                 logger.exception('BAD page download for: '+page_url)
+                self.gui_info_fcn("Error downloading page html")
                 errors+=1
                 continue
                 
@@ -138,6 +139,7 @@ class BatotoModel():
                 ac.download(img_url, img_filename)
             except Exception, e:
                 logger.exception('BAD download for: '+img_url)
+                self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
                 logger.info('OK download')

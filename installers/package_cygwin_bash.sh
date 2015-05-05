@@ -19,15 +19,9 @@ pip install $packages_pip
 # download source from github and install
 rm -r -f manga_downloader
 git clone https://github.com/kunesj/manga_downloader.git manga_downloader
-mkdir -p /opt
-rm -r -f /opt/manga_downloader
-mv manga_downloader /opt/manga_downloader
-
-echo "#!/bin/bash" > manga_downloader.sh
-echo "cd /opt/manga_downloader" >> manga_downloader.sh
-echo "python main.py" >> manga_downloader.sh
-chmod +x manga_downloader.sh
-mv manga_downloader.sh /usr/local/bin/manga_downloader
+cd manga_downloader
+make install_app
+cd ..
 
 # create xserver run configuration
 echo '<?xml version="1.0" encoding="UTF-8"?>

@@ -30,10 +30,21 @@ Get zipped source and extract it anywhere you want:
 
     https://github.com/kunesj/manga_downloader
 
-Install required dependencies:
+To install both required dependencies and application to local system run from source directory:
 
-    sudo apt-get install python python-pip python-qt4 
-    sudo pip install requests beautifulsoup4
+    make install
+    
+Its now possible to Launch application directly from command line with:
+
+    mangadownloader
+
+If you want to uninstall, you can do it by running:
+
+    make uninstall
+
+Optionally you can only install dependencies and run application directly from downloaded source:
+
+    make install_dep
 
 Install on Windows
 -------

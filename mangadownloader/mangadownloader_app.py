@@ -21,6 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import sys
+import os
 import argparse
 
 from PyQt4.QtGui import QApplication
@@ -82,11 +83,7 @@ def nogui(args):
             print chapter_list[i+args.range[0]][0]
 
 
-def main():
-    logging.basicConfig()
-    logger = logging.getLogger()
-    logger.setLevel(logging.WARNING)    
-
+def main():      
     parser = argparse.ArgumentParser(
         description='Manga downloader'
     )
@@ -108,13 +105,30 @@ def main():
         action='store_true',
         help='Debug mode')
     parser.add_argument(
+        '--logfile',
+        action='store_true',
+        help='Save log to file')
+    parser.add_argument(
         '-l', '--list',
         action='store_true',
         help='List chapters and exit. Used for finding download range')
     args = parser.parse_args()
-
+    
+    logging.basicConfig(stream=sys.stdout)
+    logger = logging.getLogger()
+    
+    logger.setLevel(logging.WARNING)  
     if args.debug:
         logger.setLevel(logging.DEBUG)
+    
+    if args.logfile:
+        try:
+            os.remove("mangadownloader.log")
+        except OSError:
+            pass
+        fh = logging.FileHandler("mangadownloader.log")
+        fh.setFormatter(logging.Formatter(fmt='%(levelname)s:%(name)s:%(message)s'))
+        logger.addHandler(fh)
 
     if args.nogui:
         nogui(args)

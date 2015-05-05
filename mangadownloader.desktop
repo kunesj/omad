@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Manga Downloader
+Name[en_US]=Manga Downloader
+GenericName=Manga Downloader
+Exec=mangadownloader
+Icon=system-file-manager
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Network;FileTransfer;
+

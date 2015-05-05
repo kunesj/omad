@@ -12,7 +12,7 @@ setup(name='manga_downloader',
         url='https://github.com/kunesj/manga_downloader',
         packages=['mangadownloader'],
         include_package_data=True,
-        license="GPL2",
+        license="GPL3",
         entry_points={
         'console_scripts': ['mangadownloader = mangadownloader.mangadownloader_app:main'],
         },

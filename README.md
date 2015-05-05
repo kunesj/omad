@@ -19,6 +19,7 @@ Optional commandline parameters:
                             Range of chapters to download [0 -1]
       --nogui               Disable GUI
       -d, --debug           Debug mode
+      --logfile             Save log to file
       -l, --list            List chapters and exit. Used for finding download
                             range
 

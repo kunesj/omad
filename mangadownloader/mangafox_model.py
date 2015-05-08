@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import requests
-from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 
 from archive_controller import ArchiveController
 

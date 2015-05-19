@@ -75,12 +75,12 @@ class BatotoModel():
 
         series_name = div_modbar.find('a').text.replace('/',' ')
         ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-        ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).replace(' ','_').encode('utf-8')
+        ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
         
         grp_select = div_modbar.find('select', attrs={'name':'group_select'})
         grp_name = (grp_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
         # remove language from group
-        grp_name = '-'.join(grp_name.split('-')[:-1]).strip().replace(' ','_')
+        grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
 
         pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
         pages = [x.strip() for x in pages]
@@ -148,7 +148,7 @@ class BatotoModel():
         logger.info("Download finished, Failed downloads = "+str(errors))
         
         if grp_name != '':
-            grp_name = '_['+grp_name+']'
+            grp_name = ' ['+grp_name+']'
         archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
         
         self.gui_info_fcn('Compressing to: '+str(archive_name))

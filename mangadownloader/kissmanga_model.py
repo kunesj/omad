@@ -69,7 +69,7 @@ class KissmangaModel():
         
         # parse html
         series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
-        ch_name = (series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]).replace(' ','_').encode('utf-8')
+        ch_name = (series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]).encode('utf-8')
         grp_name = ''
         
         pages = []
@@ -128,7 +128,7 @@ class KissmangaModel():
         logger.info("Download finished, Failed downloads = "+str(errors))
         
         if grp_name != '':
-            grp_name = '_['+grp_name+']'
+            grp_name = ' ['+grp_name+']'
         archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
         
         self.gui_info_fcn('Compressing to: '+str(archive_name))

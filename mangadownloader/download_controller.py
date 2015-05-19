@@ -24,6 +24,7 @@ import traceback
 from batoto_model import BatotoModel
 from kissmanga_model import KissmangaModel
 from mangafox_model import MangafoxModel
+from mangatraders_model import MangatradersModel
 
 def defaultInfoFcn(s='Testing printing...', exception=False):
     if exception:
@@ -44,10 +45,13 @@ class DownloadController():
             self.gui_info_fcn('Detected batoto url')
         elif "kissmanga.com" in url:
             self.webpage_model = KissmangaModel(url, self.gui_info_fcn)
-            self.gui_info_fcn('Detected kissmanga url')
+            self.gui_info_fcn('Detected kissmanga.com url')
         elif "mangafox.me" in url:
             self.webpage_model = MangafoxModel(url, self.gui_info_fcn)
-            self.gui_info_fcn('Detected mangafox url')
+            self.gui_info_fcn('Detected mangafox.me url')
+        elif "mangatraders.org" in url:
+            self.webpage_model = MangatradersModel(url, self.gui_info_fcn)
+            self.gui_info_fcn('Detected mangatraders.org url')
         else:
             self.webpage_model = None
             self.chapters = []

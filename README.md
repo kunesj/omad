@@ -10,6 +10,7 @@ Supported sites:
     bato.to
     kissmanga.com
     mangafox.me
+    mangatraders.org
 
 Optional commandline parameters:
 

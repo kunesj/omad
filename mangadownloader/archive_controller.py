@@ -56,7 +56,7 @@ class ArchiveController():
                 zipf.write(os.path.join(root, file))
         zipf.close()
         
-    def sanitize_filename(self, filename):
+    def sanitize_filename(self, filename, replaceSpaces=True):
         # strip white characters from start/end
         filename = filename.strip()
 
@@ -68,6 +68,9 @@ class ArchiveController():
                 
         # replace tab with space
         filename = filename.replace("\t", " ")
+        
+        # optionaly replace spaces with _
+        filename = filename.replace(' ', '_')
         
         return filename
                 

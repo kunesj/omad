@@ -37,7 +37,7 @@ class DownloadController():
         self.gui_info_fcn = gui_info_fcn
         self.webpage_model = None
         self.chapters = []
-        pass
+        self.results = []
     
     def setSeriesUrl(self, url):
         if ("bato.to" in url) or ("batoto.com" in url):
@@ -89,7 +89,7 @@ class DownloadController():
             self.gui_info_fcn('Downloading progress: '+str(c_id+1-ch_from)+'/'+str(ch_to+1-ch_from))
             r = self.downloadChapter(c_id)
             results.append(r)
-            
-        return results
+        
+        self.results = results
         
         

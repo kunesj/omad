@@ -73,12 +73,12 @@ def nogui(args):
     print "from: "+c_range[0][0]
     print "to: "+c_range[-1][0]
 
-    results = dc.downloadChapterRange(args.range[0], args.range[1]-1)
+    dc.downloadChapterRange(args.range[0], args.range[1]-1)
     print 'Download Finished!!!'
 
     # Print failed downloads
     print '\nChapters with failed downloads:'
-    for i, r in enumerate(results):
+    for i, r in enumerate(dc.results):
         if r is False:
             print chapter_list[i+args.range[0]][0]
 

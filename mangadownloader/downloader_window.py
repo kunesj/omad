@@ -22,17 +22,39 @@ logger = logging.getLogger(__name__)
 import traceback
 
 from PyQt4 import QtCore
+from PyQt4.QtCore import pyqtSignal, QObject, QRunnable, QThreadPool, Qt
 from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
                         QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton,\
                         QTextCursor
 
 from download_controller import DownloadController
 
+class DownloadWorker(QRunnable):
+    class DownloadWorkerSignals(QObject):
+        finished = pyqtSignal()
+    
+    def __init__(self, downloadController, ch_from, ch_to):
+        super(DownloadWorker, self).__init__()
+        self.downloadController = downloadController
+        self.ch_from = ch_from
+        self.ch_to = ch_to
+        
+        self.signals = self.DownloadWorkerSignals()
+
+    def run(self):
+        try:
+            self.downloadController.downloadChapterRange(self.ch_from, self.ch_to)
+        except Exception, e:
+            self.downloadController.gui_info_fcn(e, exception=True)
+        self.signals.finished.emit()
+
 class DownloaderWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         
         self.down_control = DownloadController(self.addInfo)
+        self.pool = QThreadPool()
+        self.pool.setMaxThreadCount(1)
         
         self.chapters = None
         self.chapters_filtered = None
@@ -104,16 +126,16 @@ class DownloaderWindow(QMainWindow):
         self.setWindowTitle('Manga Downloader')
         self.show()
         
-    def addInfo(self, s='Testing printing...'):
+    def addInfo(self, s='Testing printing...', exception=False):
+        if exception:
+            s = "!!! Exception: "+str(s)
+        
         s+='\n'
         self.info.moveCursor(QTextCursor.End)
         self.info.insertPlainText(s)
         
         sb = self.info.verticalScrollBar()
         sb.setValue(sb.maximum())
-        
-        QtCore.QCoreApplication.processEvents()
-        QtCore.QCoreApplication.processEvents()
         
     def getChaptersList(self):
         self.addInfo('Getting list of chapters...')
@@ -149,14 +171,29 @@ class DownloaderWindow(QMainWindow):
             return
         else:
             self.addInfo('Range OK, starting download of '+str((ch_to-ch_from)+1)+' chapters...')
-            
-        results = self.down_control.downloadChapterRange(ch_from, ch_to)
+        
+        self.line_url.setEnabled(False)
+        self.combo_from.setEnabled(False)
+        self.combo_to.setEnabled(False)
+        self.btn_getlist.setEnabled(False)
+        self.btn_download.setEnabled(False)
+        
+        worker = DownloadWorker(self.down_control, ch_from, ch_to)
+        worker.signals.finished.connect(self.downloadChapters_finished)
+        self.pool.start(worker)
+    
+    def downloadChapters_finished(self):
+        self.line_url.setEnabled(True)
+        self.combo_from.setEnabled(True)
+        self.combo_to.setEnabled(True)
+        self.btn_getlist.setEnabled(True)
+        self.btn_download.setEnabled(True)
         
         # Finished        
         self.addInfo('Download Finished!!!')
         
         # Print failed downloads
         self.addInfo('\nChapters with failed downloads:')  
-        for i, r in enumerate(results):
+        for i, r in enumerate(self.down_control.results):
             if r is False:
                 self.addInfo(self.chapters[i+ch_from][0])

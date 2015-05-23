@@ -1,9 +1,9 @@
-Manga Downloader
-=================
+OMAD
+====
 
-Simple application for downloading chapters from online manga reading sites.
+OMAD (Online MAnga Downloader) is a simple application for downloading chapters from online manga reading sites.
 
-![ScreenShot](https://raw.github.com/kunesj/manga_downloader/master/doc/manga-downloader.png)
+![ScreenShot](https://raw.github.com/kunesj/omad/master/doc/preview.png)
 
 Supported sites:
 
@@ -30,7 +30,7 @@ Install on Linux (Debian/Ubuntu/Mint)
 -------
 Get zipped source and extract it anywhere you want:
 
-    https://github.com/kunesj/manga_downloader
+    https://github.com/kunesj/omad
 
 To install both required dependencies and application to local system run from source directory:
 
@@ -38,7 +38,7 @@ To install both required dependencies and application to local system run from s
     
 Its now possible to Launch application directly from command line with:
 
-    mangadownloader
+    omad
 
 If you want to uninstall, you can do it by running:
 
@@ -52,7 +52,7 @@ Install on Windows
 -------
 Get zipped source and extract it anywhere you want:
 
-    https://github.com/kunesj/manga_downloader
+    https://github.com/kunesj/omad
     
 Install Python 2, setupTools, pip and PyQt4:
 

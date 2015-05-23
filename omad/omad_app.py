@@ -1,20 +1,20 @@
 #!/usr/bin/python2
 # coding: utf-8
 """
-This file is part of Manga Downloader.
+This file is part of OMAD.
 
-Manga Downloader is free software: you can redistribute it and/or modify
+OMAD is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 any later version.
 
-Manga Downloader is distributed in the hope that it will be useful,
+OMAD is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
+along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
@@ -85,7 +85,7 @@ def nogui(args):
 
 def main():      
     parser = argparse.ArgumentParser(
-        description='Manga downloader'
+        description='OMAD (Online MAnga downloader)'
     )
     parser.add_argument(
         '-u', '--url',
@@ -123,10 +123,10 @@ def main():
     
     if args.logfile:
         try:
-            os.remove("mangadownloader.log")
+            os.remove("omad.log")
         except OSError:
             pass
-        fh = logging.FileHandler("mangadownloader.log")
+        fh = logging.FileHandler("omad.log")
         fh.setFormatter(logging.Formatter(fmt='%(levelname)s:%(name)s:%(message)s'))
         logger.addHandler(fh)
 

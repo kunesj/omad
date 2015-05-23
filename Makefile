@@ -9,12 +9,12 @@ install: install_dep install_app
 	
 install_app:
 	sudo python setup.py install
-	sudo cp mangadownloader.desktop /usr/share/applications/mangadownloader.desktop
+	sudo cp omad.desktop /usr/share/applications/omad.desktop
 	
 install_dep: 
 	sudo apt-get install python python-pip python-qt4 
 	sudo pip install requests beautifulsoup4
 	
 uninstall:
-	sudo pip uninstall manga-downloader
-	sudo rm /usr/share/applications/mangadownloader.desktop
+	sudo pip uninstall omad
+	sudo rm /usr/share/applications/omad.desktop

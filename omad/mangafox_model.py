@@ -1,25 +1,24 @@
 #!/usr/bin/python2
 # coding: utf-8
 """
-This file is part of Manga Downloader.
+This file is part of OMAD.
 
-Manga Downloader is free software: you can redistribute it and/or modify
+OMAD is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 any later version.
 
-Manga Downloader is distributed in the hope that it will be useful,
+OMAD is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Manga Downloader.  If not, see <http://www.gnu.org/licenses/>.
+along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
 logger = logging.getLogger(__name__)
-import traceback
 
 import requests
 from BeautifulSoup import BeautifulSoup
@@ -32,7 +31,7 @@ def defaultInfoFcn(s='Testing printing...', exception=False):
     else:
         logger.info(s)
 
-class BatotoModel():
+class MangafoxModel():
     def __init__(self, series_url, gui_info_fcn=defaultInfoFcn):
         self.gui_info_fcn = gui_info_fcn
         self.series_url = series_url
@@ -42,14 +41,19 @@ class BatotoModel():
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
-        table_ch = soup.body.find('table', attrs={'class':'ipb_table chapters_list'})
-        en_chs = table_ch.findAll('tr', attrs={'class':'row lang_English chapter_row'})
+        div_ch = soup.body.find('div', attrs={'id':'chapters'})
+        blocks = div_ch.findAll('ul', attrs={'class':'chlist'})
+        chs = []
+        for b in blocks:
+            if b.findAll('h3') is not None:
+                chs += b.findAll('h3')
+            if b.findAll('h4') is not None:
+                chs += b.findAll('h4')
 
         processed_chapters = []
-        for ch in en_chs:
-            tds = ch.findAll('td')
-            name = tds[0].text.strip()
-            href = tds[0].find('a').get('href')
+        for ch in chs:
+            name = ch.text.replace('\n', ' ').strip()
+            href = ch.find('a').get('href')
             processed_chapters.append([name, href])
             
         processed_chapters.reverse()
@@ -61,34 +65,28 @@ class BatotoModel():
         chapter = [name, url]
         """
         full_gallery_url = chapter[1]
-            
-        # strip page number etc..
-        fgu_spl = full_gallery_url.split('/_/')
-        full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
+        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
         
-        r = requests.get(full_gallery_url+'?supress_webtoon=t', timeout=30)
+        r = requests.get(cut_gallery_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
         
         # parse html
-        div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
-
-        series_name = div_modbar.find('a').text.replace('/',' ')
-        ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-        ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
+        ch_name = chapter[0]
+        grp_name = ''
         
-        grp_select = div_modbar.find('select', attrs={'name':'group_select'})
-        grp_name = (grp_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
-        # remove language from group
-        grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
-
-        pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
-        pages = [x.strip() for x in pages]
+        pages = []
+        select = soup.body.find('select', attrs={'class':'m'})
+        select_options = select.findAll('option')
+        for o in select_options:
+            try:
+                int(o.text)
+            except:
+                continue
+            pages.append(cut_gallery_url+o.text+'.html')
+    
         galery_size = len(pages)
-
-        img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
-        galeryurl =  img_url[0:img_url.rfind('/')]+"/"
-            
+        galeryurl = full_gallery_url 
 
         logger.info('Downloading: '+ch_name)
         logger.info('Pages: '+str(galery_size))
@@ -102,25 +100,20 @@ class BatotoModel():
         for i in range(len(pages)):
             logger.info("Downloading "+str(i+1)+"/"+str(len(pages)))
             self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
-                
-            p = pages[i]
-            page_url = full_gallery_url+'/'+str(p)+'?supress_webtoon=t'
-            logger.info("Page url: "+page_url)
             
             try:
-                r = requests.get(page_url, timeout=30)
+                r = requests.get(pages[i], timeout=30)
             except Exception, e:
-                logger.exception('BAD page download for: '+page_url)
+                logger.exception('BAD page download for: '+pages[i])
                 self.gui_info_fcn("Error downloading page html")
                 errors+=1
                 continue
-                
+            
             html = unicode(r.text)
             soup = BeautifulSoup(html)
             
-            img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
-            img_ext = img_url.split('.')[-1]
-                
+            img_url = soup.body.find('img', attrs={'id':'image'}).get('src')
+            img_ext = img_url.split('.')[-1].split('?')[0]                
             
             logger.info(img_url)
             
@@ -144,7 +137,8 @@ class BatotoModel():
             else:
                 logger.info('OK download')
                     
-                    
+
+
         logger.info("Download finished, Failed downloads = "+str(errors))
         
         if grp_name != '':
@@ -162,3 +156,4 @@ class BatotoModel():
         else:
             return True
         
+

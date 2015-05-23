@@ -1,9 +1,9 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Name=Manga Downloader
-Name[en_US]=Manga Downloader
-GenericName=Manga Downloader
-Exec=mangadownloader
+Name=OMAD
+Name[en_US]=OMAD
+GenericName=Online MAnga Downloader
+Exec=omad
 Icon=system-file-manager
 Terminal=false
 Type=Application

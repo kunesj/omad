@@ -17,4 +17,5 @@ install_dep:
 	
 uninstall:
 	sudo pip uninstall omad
-	sudo rm /usr/share/applications/omad.desktop
+	sudo rm -f /usr/share/applications/omad.desktop
+	sudo rm -f /usr/local/bin/omad

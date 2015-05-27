@@ -24,8 +24,7 @@ import traceback
 from PyQt4 import QtCore
 from PyQt4.QtCore import pyqtSignal, QObject, QRunnable, QThreadPool, Qt
 from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
-                        QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton,\
-                        QTextCursor
+                        QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton
 
 from download_controller import DownloadController
 
@@ -130,12 +129,12 @@ class DownloaderWindow(QMainWindow):
         if exception:
             s = "!!! Exception: "+str(s)
         
-        s+='\n'
-        self.info.moveCursor(QTextCursor.End)
-        self.info.insertPlainText(s)
+        self.info.append(s)
         
         sb = self.info.verticalScrollBar()
         sb.setValue(sb.maximum())
+        
+        QtCore.QCoreApplication.processEvents()
         
     def getChaptersList(self):
         self.addInfo('Getting list of chapters...')

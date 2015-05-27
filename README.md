@@ -51,7 +51,7 @@ There are 3 ways you can do this.
 
 Install on Windows
 -------  
-You can download archived binary file from latest [release](https://github.com/kunesj/omad/releases) and just use that, or you can follow these instructions and install everything manualy. (When binnary for some reason doesnt work)
+You can download archived binary file from latest [release](https://github.com/kunesj/omad/releases) and just use that, or you can follow these instructions and install everything manualy. (When binary for some reason doesnt work)
 
 1. Install Python 2
     - Download [Python 2.x](https://www.python.org/downloads/windows/) installer (includes pip and setuptools)

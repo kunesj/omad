@@ -73,7 +73,9 @@ Install Python 2, setupTools, pip and PyQt4:
     - Run following commands from folder with extracted files, to finish installation:
     
     python setup.py build
+
     python setup.py install
+    
     copy .\OMAD.lnk "%USERPROFILE%\Start Menu\Programs\"
 
     - You can now start OMAD with shortcut from startmenu or from commandline with "omad" command
@@ -93,9 +95,10 @@ Building static binary
     - Download and install [Git](https://git-scm.com/downloads), in installation select to use git from windows commandline
     - Download source of development version of [PyInstaller](https://github.com/pyinstaller/pyinstaller)
     - In folder with downloaded PyInstaller files run following commands:
-    
+
     python setup.py build
+
     python setup.py install
-    
+
     - Now go to folder with OMAD source files and run: "build_win.bat" to build binary and package it together with source into zip archive
 

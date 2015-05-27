@@ -58,7 +58,7 @@ build_get_pyinstaller:
 	sudo rm -rf pyinstaller
 
 build: clean
-	pyinstaller -F -w -n omad omad/__main__.py
+	pyinstaller -F -n omad omad/__main__.py
 	cp README* dist/ ; cp LICENSE* dist/ ; cp omad.desktop dist/
 	git archive --format tar --output ./dist/omad_$(VERSION)_source.tar master
 	cd dist; tar -zcvf ../omad_$(VERSION)_Linux_$(ARCH).tar.gz *

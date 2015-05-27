@@ -7,6 +7,7 @@ RMDIR /S /Q build
 RMDIR /S /Q dist
 
 pyinstaller -F -w -n omad omad/__main__.py
+pyinstaller -F -n omad_cli omad/__main__.py
 
 copy .\README.* .\dist\
 copy .\LICENSE.* .\dist\

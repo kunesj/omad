@@ -74,7 +74,28 @@ Install Python 2, setupTools, pip and PyQt4:
     
     python setup.py build
     python setup.py install
-    copy .\OMAD.lnk "%USERPROFILE%\Start Menu\Programs\OMAD.lnk"
+    copy .\OMAD.lnk "%USERPROFILE%\Start Menu\Programs\"
 
     - You can now start OMAD with shortcut from startmenu or from commandline with "omad" command
+
+
+Building static binary
+------- 
+
+1. Linux
+    - In terminal in omad folder, run: "make build_dep" to install build dependencies
+    - Then run: "make build" to build binary and package it together with source into tar archive
     
+2. Windows
+    - Follow installation instructions, until you install all dependencies
+    - Download and install [pywin32](http://sourceforge.net/projects/pywin32) (make sure it's Python 2 version)
+    - Download and install [MSVCR](https://www.microsoft.com/en-us/download/details.aspx?id=29)
+    - Download and install [Git](https://git-scm.com/downloads), in installation select to use git from windows commandline
+    - Download source of development version of [PyInstaller](https://github.com/pyinstaller/pyinstaller)
+    - In folder with downloaded PyInstaller files run following commands:
+    
+    python setup.py build
+    python setup.py install
+    
+    - Now go to folder with OMAD source files and run: "build_win.bat" to build binary and package it together with source into zip archive
+

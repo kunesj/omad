@@ -9,13 +9,13 @@ ARCH=$(shell arch)
 VERSION=$(shell python -c "import omad; print omad.__version__")
 
 help:
-	@echo "to install everything: \n\t make install"
-	@echo "to install just app: \n\t make install_app"
-	@echo "to install just dependencies: \n\t make install_dep"
-	@echo "to uninstall app: \n\t make uninstall"
-	@echo "to build to binary file: \n\t make build"
-	@echo "to get build dependencies: \n\t make build_dep"
-	@echo "to get development version of pyinstaller: \n\t make build_get_pyinstaller"
+	@echo "Install everything: (Linux)\n\t make install"
+	@echo "Install just app: (Linux)\n\t make install_app"
+	@echo "Install just runtime dependencies: (Linux-Debian)\n\t make install_dep"
+	@echo "Uninstall app: (Linux)\n\t make uninstall"
+	@echo ""
+	@echo "Build to static binary file: (Linux)\n\t make build"
+	@echo "Get build dependencies: (Linux-Debian)\n\t make build_dep"
 
 install: install_dep install_app
 	
@@ -58,10 +58,10 @@ build_get_pyinstaller:
 	sudo rm -rf pyinstaller
 
 build: clean
-	pyinstaller -F -w -n OMAD omad/__main__.py
-	cp README* dist/ ; cp LICENSE* dist/
+	pyinstaller -F -w -n omad omad/__main__.py
+	cp README* dist/ ; cp LICENSE* dist/ ; cp omad.desktop dist/
 	git archive --format tar --output ./dist/omad_$(VERSION)_source.tar master
-	cd dist; tar -zcvf ../OMAD_$(VERSION)_Linux_$(ARCH).tar.gz *
+	cd dist; tar -zcvf ../omad_$(VERSION)_Linux_$(ARCH).tar.gz *
 	
 clean:
 	rm -rf build dist

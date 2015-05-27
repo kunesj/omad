@@ -22,7 +22,11 @@ logger = logging.getLogger(__name__)
 import traceback
 
 import requests
-from BeautifulSoup import BeautifulSoup
+try:
+    from BeautifulSoup import BeautifulSoup
+except:
+    # windows fix
+    from bs4 import BeautifulSoup 
 
 from archive_controller import ArchiveController
 

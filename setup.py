@@ -20,6 +20,7 @@ setup(name='omad',
         license = "GPL3",
         entry_points = {
         'console_scripts': ['omad = omad.omad_app:main'],
+        'gui_scripts': ['omad_gui = omad.omad_app:main'],
         },
         install_requires = [
           'setuptools',

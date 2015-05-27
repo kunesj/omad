@@ -50,23 +50,31 @@ There are 3 ways you can do this.
     - You can only start OMAD from commandline, by directly using Python interpreter (python -m omad)
 
 Install on Windows
--------
-!WINDOWS IS NOT TESTED/SUPPORTED!
+-------  
+Install Python 2, setupTools, pip and PyQt4: 
 
-Get zipped source and extract it anywhere you want:
+1. Install Python 2
+    - Download [Python 2.x](https://www.python.org/downloads/windows/) installer (includes pip and setuptools)
+    - Run installer and select to add python to system path
 
-    https://github.com/kunesj/omad
-    
-Install Python 2, setupTools, pip and PyQt4: (everything must be for Python 2)
+2. Install PyQt4
+    - Download [Python 2.x - PyQt4](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt4) wheels package
+    - From commandline in folder with downloaded file run following command, you may need to modify it for correct filename: 
 
-- [Python 2.x](https://www.python.org/downloads/windows/)
-- [Python 2.x - setupTools](http://www.lfd.uci.edu/~gohlke/pythonlibs/#setuptools)
-- [Python 2.x - pip](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pip)
-- [Python 2.x - PyQt4](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt)
+    pip install PyQt4-4.11.3-cp27-none-win32.whl
+
+3. Install rest of runtime dependencies
+    - From commandline run following command:
+
+    pip install requests beautifulsoup4
     
-Run from command line to install rest of dependencies:
+4. Install OMAD
+    - Get zipped [source](https://github.com/kunesj/omad/releases) and extract it anywhere you want
+    - Run following commands from folder with extracted files, to finish installation:
     
-    C:\Python27\Scripts\pip.exe install requests beautifulsoup4
-    
-You can only start OMAD from commandline, by directly using Python interpreter (python -m omad)
+    python setup.py build
+    python setup.py install
+    copy .\OMAD.lnk "%USERPROFILE%\Start Menu\Programs\OMAD.lnk"
+
+    - You can now start OMAD with shortcut from startmenu or from commandline with "omad" command
     

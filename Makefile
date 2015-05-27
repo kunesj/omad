@@ -5,6 +5,9 @@ PIP_RUN_DEP=requests beautifulsoup4
 APTGET_BUILD_DEP=$(APTGET_RUN_DEP) python-qt4-dev
 PIP_BUILD_DEP=$(PIP_RUN_DEP) pyinstaller
 
+ARCH=$(shell arch)
+VERSION=$(shell python -c "import omad; print omad.__version__")
+
 help:
 	@echo "to install everything: \n\t make install"
 	@echo "to install just app: \n\t make install_app"
@@ -34,6 +37,19 @@ build_dep:
 	sudo apt-get install $(APTGET_BUILD_DEP)
 	sudo pip install $(PIP_BUILD_DEP)
 	
+	$(eval PYINST_VER=$(shell python -c "import PyInstaller; v=PyInstaller.VERSION; print str(v[0])+str(v[1])") )
+	$(eval PYINST_VER_DEV=$(shell python -c "import PyInstaller; v=PyInstaller.VERSION; print int('dev' in str(v))") )
+	@echo "PyInstaller version: $(PYINST_VER), dev: $(PYINST_VER_DEV)"
+	
+	# PyInstaller requires version >= 2.2 OR dev
+	# version 2.1 throws "import QtCore" error
+	@if [ $(PYINST_VER_DEV) -ne 1 ] ; then \
+		if [ ${PYINST_VER} -lt 22 ] ; then \
+			echo "PyInstaller version is too low, installing development version from github";\
+			make build_get_pyinstaller;\
+		fi ;\
+	fi
+	
 build_get_pyinstaller:
 	sudo apt-get install git
 	git clone https://github.com/pyinstaller/pyinstaller pyinstaller
@@ -41,11 +57,10 @@ build_get_pyinstaller:
 	cd pyinstaller; sudo python setup.py install
 	sudo rm -rf pyinstaller
 
-#pyinstaller requires version >= 2.2 OR dev
 build: clean
 	pyinstaller -F -w -n OMAD omad/__main__.py
-	@echo ""
-	@echo "If getting QtCore import error when running, run: make build_get_pyinstaller"
+	cp README* dist/ ; cp LICENSE* dist/
+	cd dist; tar -zcvf ../OMAD_$(VERSION)_Linux_$(ARCH).tar.gz *
 	
 clean:
 	rm -rf build dist

@@ -34,7 +34,10 @@ There are 3 ways you can do this.
 
 1. Static binary way (Doesnt need root or any installed dependencies)
     - Download archived binary file from latest [release](https://github.com/kunesj/omad/releases).
-    - Extract "omad" file to any folder in your system path (best places are ~/bin or /usr/local/bin).
+    - Extract "omad" folder to anywhere you like, and link "omad" executable to ~/bin (or /usr/local/bin)
+    
+    ln -s /path/to/extracted/folder/ehfilemanager /home/$(whoami)/bin/ehfilemanager
+    
     - Extract omad.desktop to ~/.local/share/application or /usr/local/share/applications
     - You can now start OMAD with shortcut from global menu or from commandline with "omad" command
 
@@ -77,10 +80,8 @@ You can download archived binary file from latest [release](https://github.com/k
     python setup.py build
 
     python setup.py install
-    
-    copy .\OMAD.lnk "%USERPROFILE%\Start Menu\Programs\"
 
-    - You can now start OMAD with shortcut from startmenu or from commandline with "omad" command
+    - You can now start OMAD from commandline with "omad" command, optionally you can also create shortcut with this command
 
 
 Building static binary

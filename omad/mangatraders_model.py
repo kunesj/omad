@@ -48,12 +48,6 @@ class MangatradersModel():
             logger.info('Series url autochanged to: '+series_url)
         self.series_url = series_url
         
-        # login
-        self.login_cookies = {}
-        self.login_ok = False
-        if username is not None and password is not None:
-            self.login(username, password)
-        
     def getChaptersList(self):
         r = requests.get(self.series_url, timeout=30)
         html = unicode(r.text)
@@ -76,27 +70,10 @@ class MangatradersModel():
         processed_chapters.reverse()
         
         return processed_chapters
-        
-    def login(self, username, password):
-        self.username = username
-        self.password = password
-        
-        # TODO
     
     def downloadChapter(self, chapter):
-        if self.login_ok:
-            return self.downloadChapter_ddl(chapter)
-        else:
-            return self.downloadChapter_online(chapter)
-    
-    def downloadChapter_online(self, chapter):
-        """        
-        chapter = [name, url]
-        
-        Downloads chapter in DDL mode, needs login
-        """
-        
-        # TODO
+        return self.downloadChapter_online(chapter)
+        # TODO - if logged in, use direct download
     
     def downloadChapter_online(self, chapter):
         """        

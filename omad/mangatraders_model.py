@@ -31,14 +31,9 @@ except:
 
 from archive_controller import ArchiveController
 
-def defaultInfoFcn(s='Testing printing...', exception=False):
-    if exception:
-        logger.exception(s)
-    else:
-        logger.info(s)
-
 class MangatradersModel():
-    def __init__(self, series_url, gui_info_fcn=defaultInfoFcn, username=None, password=None):
+    def __init__(self, series_url, gui_info_fcn):
+        # default is download_controller.defaultInfoFcn
         self.gui_info_fcn = gui_info_fcn
         
         # fix url
@@ -71,11 +66,11 @@ class MangatradersModel():
         
         return processed_chapters
     
-    def downloadChapter(self, chapter):
-        return self.downloadChapter_online(chapter)
+    def downloadChapter(self, chapter, downloadPath):
+        return self.downloadChapter_online(chapter, downloadPath)
         # TODO - if logged in, use direct download
     
-    def downloadChapter_online(self, chapter):
+    def downloadChapter_online(self, chapter, downloadPath):
         """        
         chapter = [name, url]
         
@@ -112,7 +107,7 @@ class MangatradersModel():
         logger.info('Images url: '+cut_gallery_url)
 
         # create temp folder for downloads
-        ac = ArchiveController()
+        ac = ArchiveController(downloadPath)
         ac.mkdir()
 
         errors = 0
@@ -175,7 +170,9 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     
-    mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr')
+    from download_controller import defaultInfoFcn
+    
+    mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', defaultInfoFcn)
     chapters = mod.getChaptersList()
     print chapters[0]
-    print mod.downloadChapter(chapters[0])
+    print mod.downloadChapter(chapters[0], './')

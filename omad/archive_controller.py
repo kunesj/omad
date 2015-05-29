@@ -30,8 +30,9 @@ import zipfile
 import requests
 
 class ArchiveController():
-    def __init__(self):
+    def __init__(self, downloadPath='./'):
         self.path = None
+        self.downloadPath = downloadPath
     
     def mkdir(self):
         self.path = tempfile.mkdtemp()
@@ -40,9 +41,9 @@ class ArchiveController():
         shutil.rmtree(self.path)
         self.path = None
         
-    def zipdir(self, archive_name, archive_path='./'):
+    def zipdir(self, archive_name):
         archive_name = self.sanitize_filename(archive_name)
-        zipf = zipfile.ZipFile(os.path.join(archive_path, archive_name), 'w')
+        zipf = zipfile.ZipFile(os.path.join(self.downloadPath, archive_name), 'w')
         for root, dirs, files in os.walk(self.path):
             for file in files:
                 full_path = os.path.join(root, file)

@@ -20,16 +20,19 @@ along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 logger = logging.getLogger(__name__)
 import traceback
+import sys
 
 from PyQt4 import QtCore
 from PyQt4.QtCore import pyqtSignal, QObject, QRunnable, QThreadPool, Qt
 from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
-                        QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton
+                        QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton, \
+                        QFileDialog
 
 from download_controller import DownloadController
 
 class DownloadWorker(QRunnable):
     class DownloadWorkerSignals(QObject):
+        update = pyqtSignal(str,bool,bool)
         finished = pyqtSignal()
     
     def __init__(self, downloadController, ch_from, ch_to):
@@ -39,27 +42,35 @@ class DownloadWorker(QRunnable):
         self.ch_to = ch_to
         
         self.signals = self.DownloadWorkerSignals()
-
+    
     def run(self):
         try:
+            self.downloadController.setGuiInfoFcn(self.signals.update.emit)
             self.downloadController.downloadChapterRange(self.ch_from, self.ch_to)
         except Exception, e:
-            self.downloadController.gui_info_fcn(e, exception=True)
+            self.downloadController.guiInfoFcn(e, exception=True)
         self.signals.finished.emit()
 
 class DownloaderWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         
-        self.down_control = DownloadController(self.addInfo)
         self.pool = QThreadPool()
         self.pool.setMaxThreadCount(1)
         
-        self.chapters = None
-        self.chapters_filtered = None
+        self.initVariables()
  
         self.resize(700, 400)
         self.initUI()   
+        
+        self.line_downpath.setText(self.down_control.getDownloadPath())
+        
+    def initVariables(self):
+        self.down_control = DownloadController(self.addInfo)
+        self.chapters = None
+        self.chapters_filtered = None
+        self.ch_from = None
+        self.ch_to = None
              
     def initUI(self):
         cw = QWidget()
@@ -80,7 +91,7 @@ class DownloaderWindow(QMainWindow):
         
         self.line_url = QLineEdit()
         
-        layout_url.addWidget(QLabel('Series URL:'))
+        layout_url.addWidget(QLabel('<b>Series URL:</b>'))
         layout_url.addWidget(self.line_url, 1)
         layout_main.addLayout(layout_url)
         
@@ -101,6 +112,20 @@ class DownloaderWindow(QMainWindow):
         
         layout_main.addLayout(layout_combo)
         
+        ## Download path
+        layout_downpath = QHBoxLayout()
+        layout_downpath.setSpacing(5)
+        
+        self.line_downpath = QLineEdit()
+        self.line_downpath.setEnabled(False)
+        self.btn_downpath = QPushButton('Change')
+        self.btn_downpath.pressed.connect(self.selectDownloadPath)
+        
+        layout_downpath.addWidget(QLabel('<b>Download path:</b>'))
+        layout_downpath.addWidget(self.line_downpath, 1)
+        layout_downpath.addWidget(self.btn_downpath)
+        layout_main.addLayout(layout_downpath)
+        
         ## Buttons
         layout_btn = QHBoxLayout()
         layout_btn.setSpacing(5)
@@ -120,31 +145,64 @@ class DownloaderWindow(QMainWindow):
         layout_btn.addStretch()
         layout_main.addLayout(layout_btn)
         
+        # status bar
+        self.statusBar().showMessage('Ready')
+        
         # add layout to main window
         cw.setLayout(layout_main)
         self.setWindowTitle('OMAD - Online MAnga Downloader')
         self.show()
         
-    def addInfo(self, s='Testing printing...', exception=False):
+    def closeEvent(self, event):
+        """
+        Runs when user tryes to close main window.
+
+        sys.exit(0) - to fix wierd bug, where process is not terminated.
+        """
+        sys.exit(0)
+        
+    def addInfo(self, s='Testing printing...', exception=False, downloadProgress=False):
+        logger.info(s+', '+str(exception)+', '+str(downloadProgress))
+        
         if exception:
             s = "!!! Exception: "+str(s)
         
-        self.info.append(s)
+        if downloadProgress:
+            s = "Downloading progress: "+s
+            self.setStatusBarText(s)
         
+        self.info.append(s)
         sb = self.info.verticalScrollBar()
         sb.setValue(sb.maximum())
         
         QtCore.QCoreApplication.processEvents()
         
-    def getChaptersList(self):
+    def setStatusBarText(self, s='Testing...'):
+        """
+        Changes status bar text
+        """
+        self.statusBar().showMessage(s)
+        QtCore.QCoreApplication.processEvents()
+    
+    def getChaptersList(self):        
         self.addInfo('Getting list of chapters...')
         
+        # reinit clean variables
+        self.initVariables()
+        
+        # get series url
         url = str(self.line_url.text()).strip()
         
         if not self.down_control.setSeriesUrl(url):
             return # bad url
             
         self.chapters = self.down_control.getChaptersList()
+        
+        logger.debug('Setting up comboBoxes...')
+        for i in xrange(0, self.combo_from.count()):
+            self.combo_from.removeItem(0)
+        for i in xrange(0, self.combo_to.count()):
+            self.combo_to.removeItem(0)
         
         for c in self.chapters:
             self.combo_from.addItem(c[0])
@@ -162,37 +220,72 @@ class DownloaderWindow(QMainWindow):
     def downloadChapters(self):
         self.addInfo('Checking chapter range')
         
-        ch_from = self.combo_from.currentIndex()
-        ch_to = self.combo_to.currentIndex()
+        self.ch_from = self.combo_from.currentIndex()
+        self.ch_to = self.combo_to.currentIndex()
         
-        if ch_from>ch_to:
+        if self.ch_from>self.ch_to:
             self.addInfo('Bad range. Cant download backwards!')
             return
         else:
-            self.addInfo('Range OK, starting download of '+str((ch_to-ch_from)+1)+' chapters...')
+            self.addInfo('Range OK, starting download of '+str((self.ch_to-self.ch_from)+1)+' chapters...')
         
-        self.line_url.setEnabled(False)
-        self.combo_from.setEnabled(False)
-        self.combo_to.setEnabled(False)
-        self.btn_getlist.setEnabled(False)
-        self.btn_download.setEnabled(False)
+        self.gui_disable(True)
         
-        worker = DownloadWorker(self.down_control, ch_from, ch_to)
+        worker = DownloadWorker(self.down_control, self.ch_from, self.ch_to)
+        worker.signals.update.connect(self.addInfo)
         worker.signals.finished.connect(self.downloadChapters_finished)
         self.pool.start(worker)
     
     def downloadChapters_finished(self):
-        self.line_url.setEnabled(True)
-        self.combo_from.setEnabled(True)
-        self.combo_to.setEnabled(True)
-        self.btn_getlist.setEnabled(True)
-        self.btn_download.setEnabled(True)
+        self.gui_disable(False)
+        self.setStatusBarText('Ready - Download Finished!!')
         
         # Finished        
-        self.addInfo('Download Finished!!!')
+        self.addInfo('Download Finished!!')
         
         # Print failed downloads
-        self.addInfo('\nChapters with failed downloads:')  
+        failed_chs = []
         for i, r in enumerate(self.down_control.results):
             if r is False:
-                self.addInfo(self.chapters[i+ch_from][0])
+                failed_chs.append(self.chapters[i+self.ch_from])
+        
+        if len(failed_chs)==0:
+            self.addInfo('\nNo failed downloads') 
+        else:
+            self.addInfo('\nChapters with failed downloads:')  
+            for c in failed_chs:
+                self.addInfo(c[0])
+        self.addInfo('') 
+                
+    def selectDownloadPath(self):
+        downdir = self._get_dir(directory='')
+        self.down_control.setDownloadPath(downdir)
+        self.line_downpath.setText(self.down_control.getDownloadPath())
+        
+    def _get_dir(self, directory=''):
+        """
+        Draw a dialog for directory selection.
+        """
+
+        downdir = QFileDialog.getExistingDirectory(
+            caption='Select Folder',
+            options=QFileDialog.ShowDirsOnly,
+            directory=directory
+        )
+
+        if len(downdir) > 0:
+            downdir = "%s" % (downdir)
+            downdir = downdir.encode("utf8")
+        else:
+            downdir = directory
+
+        return downdir
+                
+    def gui_disable(self, downloading=True):
+        self.line_url.setEnabled(not downloading)
+        self.combo_from.setEnabled(not downloading)
+        self.combo_to.setEnabled(not downloading)
+        self.btn_getlist.setEnabled(not downloading)
+        self.btn_download.setEnabled(not downloading)
+        self.btn_downpath.setEnabled(not downloading)
+    

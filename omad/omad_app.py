@@ -29,11 +29,8 @@ from PyQt4.QtGui import QApplication
 from downloader_window import DownloaderWindow
 from download_controller import DownloadController
 
-def print_info(s):
-    print s
-
 def nogui(args):
-    dc = DownloadController(print_info)
+    dc = DownloadController()
     
     print "Downloading gallery info for: "+args.url
 

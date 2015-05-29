@@ -30,14 +30,9 @@ except:
 
 from archive_controller import ArchiveController
 
-def defaultInfoFcn(s='Testing printing...', exception=False):
-    if exception:
-        logger.exception(s)
-    else:
-        logger.info(s)
-
 class KissmangaModel():
-    def __init__(self, series_url, gui_info_fcn=defaultInfoFcn):
+    def __init__(self, series_url, gui_info_fcn):
+        # default is download_controller.defaultInfoFcn
         self.gui_info_fcn = gui_info_fcn
         self.series_url = series_url
         
@@ -61,7 +56,7 @@ class KissmangaModel():
         
         return processed_chapters
         
-    def downloadChapter(self, chapter):
+    def downloadChapter(self, chapter, downloadPath):
         """
         chapter = [name, url]
         """
@@ -94,7 +89,7 @@ class KissmangaModel():
         logger.info('Images url: '+galeryurl)
 
         # create temp folder for downloads
-        ac = ArchiveController()
+        ac = ArchiveController(downloadPath)
         ac.mkdir()
 
         errors = 0

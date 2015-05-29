@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 import traceback
 
 import os
+import tempfile
 import shutil
 from random import randint
 import zipfile
@@ -29,23 +30,14 @@ import zipfile
 import requests
 
 class ArchiveController():
-    def __init__(self, rootpath='./'):
-        self.rootpath = rootpath
-        self.foldername = None
+    def __init__(self):
         self.path = None
     
     def mkdir(self):
-        # create temp folder for downloads
-        foldername="_temp"
-        while os.path.exists(os.path.join(self.rootpath, foldername)):
-            foldername=foldername+str(randint(0,9))
-        os.makedirs(os.path.join(self.rootpath, foldername))
-        self.foldername = foldername
-        self.path = os.path.join(self.rootpath, self.foldername)
+        self.path = tempfile.mkdtemp()
         
     def rmdir(self):
         shutil.rmtree(self.path)
-        self.foldername = None
         self.path = None
         
     def zipdir(self, archive_name, archive_path='./'):

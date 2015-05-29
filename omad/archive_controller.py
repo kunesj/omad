@@ -45,7 +45,9 @@ class ArchiveController():
         zipf = zipfile.ZipFile(os.path.join(archive_path, archive_name), 'w')
         for root, dirs, files in os.walk(self.path):
             for file in files:
-                zipf.write(os.path.join(root, file))
+                full_path = os.path.join(root, file)
+                if os.path.isfile(full_path):
+                    zipf.write(full_path, os.path.basename(full_path))
         zipf.close()
         
     def sanitize_filename(self, filename, replaceSpaces=True):

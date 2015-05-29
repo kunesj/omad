@@ -43,7 +43,10 @@ class ArchiveController():
         
     def zipdir(self, archive_name):
         archive_name = self.sanitize_filename(archive_name)
-        zipf = zipfile.ZipFile(os.path.join(self.downloadPath, archive_name), 'w')
+        archive_path = os.path.join(self.downloadPath, archive_name)
+        logger.debug('Compressing files in temp folder to archive in path: '+archive_path)
+        
+        zipf = zipfile.ZipFile(archive_path, 'w')
         for root, dirs, files in os.walk(self.path):
             for file in files:
                 full_path = os.path.join(root, file)

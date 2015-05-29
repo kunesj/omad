@@ -104,6 +104,7 @@ class DownloadController():
         chapter = self.chapters[chapter_list_number]
         self.guiInfoFcn('Downloading: '+chapter[0])
         
+        logger.debug('Starting download of chapter:'+str(chapter)+', '+self.downloadPath)
         r = self.webpage_model.downloadChapter(chapter, self.downloadPath)
         
         if not r:

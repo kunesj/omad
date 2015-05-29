@@ -21,6 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 import sys
+import os
 
 from PyQt4 import QtCore
 from PyQt4.QtCore import pyqtSignal, QObject, QRunnable, QThreadPool, Qt
@@ -55,6 +56,7 @@ class DownloaderWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         
+        self.DownloadPath = os.path.expanduser("~") # get home dir
         self.pool = QThreadPool()
         self.pool.setMaxThreadCount(1)
         
@@ -67,6 +69,7 @@ class DownloaderWindow(QMainWindow):
         
     def initVariables(self):
         self.down_control = DownloadController(self.addInfo)
+        self.down_control.setDownloadPath(self.DownloadPath)
         self.chapters = None
         self.chapters_filtered = None
         self.ch_from = None
@@ -258,9 +261,10 @@ class DownloaderWindow(QMainWindow):
         self.addInfo('') 
                 
     def selectDownloadPath(self):
-        downdir = self._get_dir(directory='')
+        downdir = self._get_dir(directory=self.DownloadPath)
         self.down_control.setDownloadPath(downdir)
-        self.line_downpath.setText(self.down_control.getDownloadPath())
+        self.DownloadPath = self.down_control.getDownloadPath()
+        self.line_downpath.setText(self.DownloadPath)
         
     def _get_dir(self, directory=''):
         """

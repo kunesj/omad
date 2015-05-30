@@ -168,9 +168,10 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     
-    from download_controller import defaultInfoFcn
+    from download_controller import DownloadController
+    dc = DownloadController()
     
-    mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', defaultInfoFcn)
+    mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', dc.guiInfoFcn)
     chapters = mod.getChaptersList()
     print chapters[0]
     print mod.downloadChapter(chapters[0], './')

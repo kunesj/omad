@@ -94,7 +94,6 @@ class KissmangaModel():
 
         errors = 0
         for i in range(len(pages)):
-            logger.info("Downloading "+str(i+1)+"/"+str(len(pages)))
             self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
                 
             img_url = pages[i]
@@ -130,8 +129,7 @@ class KissmangaModel():
             grp_name = ' ['+grp_name+']'
         archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
         
-        self.gui_info_fcn('Compressing to: '+str(archive_name))
-        logger.info('Compressing to: '+str(archive_name))
+        self.gui_info_fcn('Compressing to: '+archive_name)
         ac.zipdir(archive_name)
         
         ac.rmdir()

@@ -37,19 +37,24 @@ class DownloadController():
         self.downloadPath = None
         self.setDownloadPath('.')
         
-    def guiInfoFcn(self, s='Testing printing...', exception=False, downloadProgress=False):
+    def guiInfoFcn(self, s='Testing printing...', exception=False, downloadProgress=False, trace=[]):
         """
         Used to add ability to use keywords to pyqt signals
         """
+        if not isinstance(s, basestring):
+            s = str(s)
+        
         if self.gui_info_fcn is None:
             if downloadProgress:
                 s = "Downloading progress: "+s
             if exception:
                 logger.exception(s)
+                for t in trace:
+                    logger.exception(str(t))
             else:
                 logger.info(s)
         else:
-            self.gui_info_fcn(s, exception, downloadProgress)
+            self.gui_info_fcn(s, exception, downloadProgress, trace)
     
     def setGuiInfoFcn(self, fcn):
         self.gui_info_fcn = fcn
@@ -91,7 +96,8 @@ class DownloadController():
         except Exception,e:
             self.webpage_model = None
             self.chapters = []
-            self.guiInfoFcn('Error when downloading list of chapters! wrong url?', True)
+            logger.exception(e)
+            self.guiInfoFcn('Error when downloading list of chapters! wrong url?', exception=True)
             return False
             
         return True
@@ -112,13 +118,13 @@ class DownloadController():
         return r
         
     def downloadChapterRange(self, ch_from, ch_to):
-        results = []
-        for c_id in range(ch_from, ch_to+1):
+        results = [False] * len(range(ch_from, ch_to+1))
+        for i, c_id in enumerate(range(ch_from, ch_to+1)):
             # Downloading progress: x/y
             self.guiInfoFcn(str(c_id+1-ch_from)+'/'+str(ch_to+1-ch_from), downloadProgress=True)
             
             r = self.downloadChapter(c_id)
-            results.append(r)
+            results[i] = r
         
         self.results = results
         

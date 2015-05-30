@@ -33,7 +33,7 @@ from download_controller import DownloadController
 
 class DownloadWorker(QRunnable):
     class DownloadWorkerSignals(QObject):
-        update = pyqtSignal(str,bool,bool)
+        update = pyqtSignal(str,bool,bool,list)
         finished = pyqtSignal()
     
     def __init__(self, downloadController, ch_from, ch_to):
@@ -49,7 +49,9 @@ class DownloadWorker(QRunnable):
             self.downloadController.setGuiInfoFcn(self.signals.update.emit)
             self.downloadController.downloadChapterRange(self.ch_from, self.ch_to)
         except Exception, e:
-            self.downloadController.guiInfoFcn(e, exception=True)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            self.downloadController.guiInfoFcn(e, exception=True, trace=trace)
         self.signals.finished.emit()
 
 class DownloaderWindow(QMainWindow):
@@ -164,17 +166,25 @@ class DownloaderWindow(QMainWindow):
         """
         sys.exit(0)
         
-    def addInfo(self, s='Testing printing...', exception=False, downloadProgress=False):
-        logger.info(s+', '+str(exception)+', '+str(downloadProgress))
+    def addInfo(self, s='Testing printing...', exception=False, downloadProgress=False, trace=[]):
+        logger.info(s+', '+str(exception)+', '+str(downloadProgress)+', '+str(trace))
+        
+        if not isinstance(s, basestring) and type(s) != type(QtCore.QString('')):
+            s = str(s)
         
         if exception:
-            s = "!!! Exception: "+str(s)
+            s = "!!! Exception: "+s
         
         if downloadProgress:
             s = "Downloading progress: "+s
             self.setStatusBarText(s)
         
         self.info.append(s)
+        
+        if exception:
+            for t in trace:
+                self.info.append(str(t))
+        
         sb = self.info.verticalScrollBar()
         sb.setValue(sb.maximum())
         

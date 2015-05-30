@@ -36,7 +36,7 @@ There are 3 ways you can do this.
     - Download archived binary file from latest [release](https://github.com/kunesj/omad/releases).
     - Extract "omad" folder to anywhere you like, and link "omad" executable to ~/bin (or /usr/local/bin)
     
-    ln -s /path/to/extracted/folder/ehfilemanager /home/$(whoami)/bin/ehfilemanager
+    ln -s /path/to/extracted/folder/omad /home/$(whoami)/bin/omad
     
     - Extract omad.desktop to ~/.local/share/application or /usr/local/share/applications
     - You can now start OMAD with shortcut from global menu or from commandline with "omad" command

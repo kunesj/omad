@@ -48,6 +48,7 @@ class BatotoModel():
         for ch in en_chs:
             tds = ch.findAll('td')
             name = tds[0].text.strip()
+            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = tds[0].find('a').get('href')
             processed_chapters.append([name, href])
             
@@ -74,10 +75,12 @@ class BatotoModel():
 
         series_name = div_modbar.find('a').text.replace('/',' ')
         ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-        ch_name = (series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
+        ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         
         grp_select = div_modbar.find('select', attrs={'name':'group_select'})
-        grp_name = (grp_select.find('option', attrs={'selected':'selected'}).text).encode('utf-8')
+        grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
+        grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         # remove language from group
         grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
 

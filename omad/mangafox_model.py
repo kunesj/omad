@@ -52,6 +52,7 @@ class MangafoxModel():
         processed_chapters = []
         for ch in chs:
             name = ch.text.replace('\n', ' ').strip()
+            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = ch.find('a').get('href')
             processed_chapters.append([name, href])
             

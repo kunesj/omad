@@ -64,4 +64,4 @@ build: clean
 	cd dist; tar -zcvf ../omad_$(VERSION)_Linux_$(ARCH).tar.gz *
 	
 clean:
-	rm -rf build dist
+	sudo rm -rf build dist

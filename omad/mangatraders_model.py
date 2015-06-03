@@ -57,6 +57,7 @@ class MangatradersModel():
         for r in rows:
             a = r.find('a')
             name = a.text.strip()
+            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = a.get('href')
             if not 'mangatraders.org' in href:
                 href = 'http://mangatraders.org'+href
@@ -88,9 +89,11 @@ class MangatradersModel():
         
         series_name = mainPageContainer.find('ol').find('li').find('a') \
             .text.strip()
+        series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         ch_name = series_name+' - '+mainPageContainer.find('ol') \
             .find('select', attrs={'id':'changeChapterSelect'}) \
             .find('option', attrs={'selected':'selected'}).text.strip()
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         grp_name = ''
         
         pages = []

@@ -47,6 +47,7 @@ class KissmangaModel():
         processed_chapters = []
         for ch in en_chs:
             name = ch.get('title').strip()
+            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = ch.get('href')
             if not 'kissmanga.com' in href:
                 href = 'http://kissmanga.com/'+href
@@ -68,7 +69,8 @@ class KissmangaModel():
         
         # parse html
         series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
-        ch_name = (series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]).encode('utf-8')
+        ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         grp_name = ''
         
         pages = []

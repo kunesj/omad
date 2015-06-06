@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 # coding: utf-8
-"""
+""" 
 This file is part of OMAD.
 
 OMAD is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ class DownloadController():
                 for t in trace:
                     logger.exception(str(t))
             else:
-                logger.info(s)
+                print s
         else:
             self.gui_info_fcn(s, exception, downloadProgress, trace)
     

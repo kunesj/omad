@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 # coding: utf-8
-"""
+""" 
 This file is part of OMAD.
 
 OMAD is free software: you can redistribute it and/or modify
@@ -30,6 +30,14 @@ from downloader_window import DownloaderWindow
 from download_controller import DownloadController
 
 def nogui(args):
+    #test if we have all needed args
+    if args.url is None:
+        print "--url option is needed in nogui mode!"
+        sys.exit(2)
+    if args.range is None and args.list is False:
+        print "--range (or --list) option is needed in nogui mode!"
+        sys.exit(2)
+
     dc = DownloadController()
     
     print "Downloading gallery info for: "+args.url
@@ -39,13 +47,15 @@ def nogui(args):
         sys.exit(2)
     chapter_list = dc.getChaptersList()
     
+    # -l --list option, print chapters and exit
     if args.list:
         print "Printing list of chapters..."
         for i in range(len(chapter_list)):
             print str(i)+" - "+chapter_list[i][0] 
         print "Exiting..."
         sys.exit(0)
-
+    
+    # test -r --range option
     if args.range is None or len(args.range)!=2:
         print "Incorrect range argument, exiting..."
         sys.exit(2)
@@ -65,7 +75,8 @@ def nogui(args):
     if len(c_range)==0:
         print "Nothing to download, exiting..."
         sys.exit(0)
-
+    
+    # downloading
     print "Starting download of "+str(len(c_range))+" chapters..."
     print "from: "+c_range[0][0]
     print "to: "+c_range[-1][0]

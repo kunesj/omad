@@ -20,8 +20,7 @@ help:
 install: install_dep install_app
 	
 install_app: clean
-	python setup.py build
-	sudo python setup.py install
+	sudo python setup.py build install
 	sudo cp omad.desktop /usr/share/applications/omad.desktop
 	
 install_dep: 
@@ -51,11 +50,11 @@ build_dep:
 	fi
 	
 build_get_pyinstaller:
-	sudo apt-get install git
-	git clone https://github.com/pyinstaller/pyinstaller pyinstaller
-	cd pyinstaller; python setup.py build
-	cd pyinstaller; sudo python setup.py install
+	sudo apt-get install git build-essential
 	sudo rm -rf pyinstaller
+	git clone https://github.com/pyinstaller/pyinstaller pyinstaller
+	cd pyinstaller/bootloader ; python ./waf configure build install --no-lsb
+	cd pyinstaller; sudo python setup.py build install
 
 build: clean
 	pyinstaller -D -n omad omad/__main__.py

@@ -1,0 +1,15 @@
+language: python
+python:
+  - "2.7"
+virtualenv:
+    system_site_packages: true
+before_install:
+    - sudo apt-get update -qq
+    - make install_dep
+    
+# command to run tests
+script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad
+# script: nosetests --with-coverage --cover-package=omad
+
+after_success:
+    - coveralls

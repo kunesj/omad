@@ -1,6 +1,6 @@
 
 APTGET_RUN_DEP=python python-pip python-qt4
-PIP_RUN_DEP=requests beautifulsoup4
+PIP_RUN_DEP=requests beautifulsoup
 
 APTGET_BUILD_DEP=$(APTGET_RUN_DEP) python-qt4-dev
 PIP_BUILD_DEP=$(PIP_RUN_DEP) pyinstaller

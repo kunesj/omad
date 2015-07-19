@@ -8,8 +8,8 @@ before_install:
     - make install_dep
     
 # command to run tests
-script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad
-# script: nosetests --with-coverage --cover-package=omad
+script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad -a '!travisFail'
+# script: nosetests --with-coverage --cover-package=omad -a '!travisFail'
 
 after_success:
     - coveralls

@@ -15,8 +15,7 @@ before_install:
     - pip install coverage
     
 # command to run tests
-script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad 
-#-a '!travisFail'
+script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad -a '!travisFail'
 # script: nosetests --with-coverage --cover-package=omad -a '!travisFail'
 
 after_success:

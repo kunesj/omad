@@ -9,10 +9,10 @@ addons:
     packages:
     - python 
     - python-pip
-    - python-coverage 
     - python-qt4
 before_install:
     - pip install requests beautifulsoup
+    - pip install coverage
     
 # command to run tests
 script: nosetests --with-coverage --verbose --nocapture --nologcapture --cover-package=omad -a '!travisFail'

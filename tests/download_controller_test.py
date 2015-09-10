@@ -54,6 +54,13 @@ class DownloadControllerTest(unittest.TestCase):
         
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, MangatradersModel) )
+        
+    def bad_series_url_test(self):
+        dc = DownloadController()
+        r = dc.setSeriesUrl(self.batoto_series_url+"asdfgh")
+        
+        self.assertFalse(r)
+        self.assertTrue( dc.webpage_model is None )
     
     def download_path_test(self):
         dpath = "./"

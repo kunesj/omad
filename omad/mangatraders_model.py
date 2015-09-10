@@ -78,32 +78,38 @@ class MangatradersModel():
         Downloads chapter in online reading mode, does not need login
         """
         full_gallery_url = chapter[1]
-        cut_gallery_url = full_gallery_url.split('/page-')[0]
         
-        r = requests.get(full_gallery_url, timeout=30)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
-        
-        # parse html
-        mainPageContainer = soup.body.find('div', attrs={'class':'container mainPageContainer'})
-        
-        series_name = mainPageContainer.find('ol').find('li').find('a') \
-            .text.strip()
-        series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        ch_name = series_name+' - '+mainPageContainer.find('ol') \
-            .find('select', attrs={'id':'changeChapterSelect'}) \
-            .find('option', attrs={'selected':'selected'}).text.strip()
-        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        grp_name = ''
-        
-        pages = []
-        pages_options = mainPageContainer.find('ol') \
-            .find('select', attrs={'id':'changePageSelect'}).findAll('option')
-        for p in pages_options:
-            pages.append(cut_gallery_url+'/'+p.get('value'))
-        
-        galery_size = len(pages)
-        galeryurl = full_gallery_url
+        try:
+            cut_gallery_url = full_gallery_url.split('/page-')[0]
+            
+            r = requests.get(full_gallery_url, timeout=30)
+            html = unicode(r.text)
+            soup = BeautifulSoup(html)
+            
+            # parse html
+            mainPageContainer = soup.body.find('div', attrs={'class':'container mainPageContainer'})
+            
+            series_name = mainPageContainer.find('ol').find('li').find('a') \
+                .text.strip()
+            series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            ch_name = series_name+' - '+mainPageContainer.find('ol') \
+                .find('select', attrs={'id':'changeChapterSelect'}) \
+                .find('option', attrs={'selected':'selected'}).text.strip()
+            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            grp_name = ''
+            
+            pages = []
+            pages_options = mainPageContainer.find('ol') \
+                .find('select', attrs={'id':'changePageSelect'}).findAll('option')
+            for p in pages_options:
+                pages.append(cut_gallery_url+'/'+p.get('value'))
+            
+            galery_size = len(pages)
+            galeryurl = full_gallery_url
+        except Exception, e:
+            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
+            self.gui_info_fcn("Error downloading/parsing chapter html")
+            return False # failed download
             
         logger.info('Downloading: '+ch_name)
         logger.info('Pages: '+str(galery_size))
@@ -115,7 +121,7 @@ class MangatradersModel():
 
         errors = 0
         for i in range(len(pages)):
-            self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
+            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
             
             r = requests.get(pages[i], timeout=30)
             html = unicode(r.text)
@@ -146,7 +152,7 @@ class MangatradersModel():
                 self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
-                logger.info('OK download')
+                logger.debug('OK download')
                     
         
         logger.info("Download finished, Failed downloads = "+str(errors))

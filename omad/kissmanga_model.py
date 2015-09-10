@@ -63,28 +63,35 @@ class KissmangaModel():
         """
         full_gallery_url = chapter[1]
         
-        r = requests.get(full_gallery_url, timeout=30)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
-        
-        # parse html
-        series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
-        ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
-        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        grp_name = ''
-        
-        pages = []
-        scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
-        for script in scripts:
-            if script.text.strip().startswith('var lstImages = new Array();'):
-                lines = script.text.split('\n')
-                for l in lines:
-                    if l.strip().startswith('lstImages.push('):
-                        pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
-        
-        galery_size = len(pages)
-        galeryurl = full_gallery_url
+        try:
+            r = requests.get(full_gallery_url, timeout=30)
+            html = unicode(r.text)
+            soup = BeautifulSoup(html)
             
+            # parse html
+            series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
+            ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
+            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            grp_name = ''
+            
+            pages = []
+            scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
+            for script in scripts:
+                if script.text.strip().startswith('var lstImages = new Array();'):
+                    lines = script.text.split('\n')
+                    for l in lines:
+                        if l.strip().startswith('lstImages.push('):
+                            pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
+            
+            if len(pages)==0:
+                raise Exception("No pages in chapter! Wrong URL?")
+            
+            galery_size = len(pages)
+            galeryurl = full_gallery_url
+        except Exception, e:
+            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
+            self.gui_info_fcn("Error downloading/parsing chapter html")
+            return False # failed download            
 
         logger.info('Downloading: '+ch_name)
         logger.info('Pages: '+str(galery_size))
@@ -96,7 +103,7 @@ class KissmangaModel():
 
         errors = 0
         for i in range(len(pages)):
-            self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
+            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
                 
             img_url = pages[i]
             img_ext = img_url.split('.')[-1].split('?')[0]                
@@ -121,7 +128,7 @@ class KissmangaModel():
                 self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
-                logger.info('OK download')
+                logger.debug('OK download')
                     
 
 

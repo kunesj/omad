@@ -32,7 +32,7 @@ class ModelsTest(unittest.TestCase):
     def mangafox_test(self):
         dc = DownloadController()
         
-        # test chpter list request
+        # test chapter list request
         mod = MangafoxModel(self.mangafox_series_url, dc.guiInfoFcn)
         chapters = mod.getChaptersList()
         
@@ -41,11 +41,21 @@ class ModelsTest(unittest.TestCase):
         
         # test if download was sucessfull
         self.assertTrue(r)
+    
+    @attr("travisFail") # Test fails at travis for an unknown reason
+    def mangafox_test_bad_url(self): 
+        dc = DownloadController()
+        
+        # test chapter request exception
+        mod = MangafoxModel("http://mangafox.me", dc.guiInfoFcn)
+        r = mod.downloadChapter(["bad_chapter", "http://mangafox.me/manga/asdfgh"], './')
+        
+        self.assertFalse(r)
         
     def batoto_test(self):        
         dc = DownloadController()
         
-        # test chpter list request
+        # test chapter list request
         mod = BatotoModel(self.batoto_series_url, dc.guiInfoFcn)
         chapters = mod.getChaptersList()
         
@@ -54,11 +64,20 @@ class ModelsTest(unittest.TestCase):
         
         # test if download was sucessfull
         self.assertTrue(r)
+    
+    def batoto_test_bad_url(self): 
+        dc = DownloadController()
+        
+        # test chapter request exception
+        mod = BatotoModel("http://bato.to", dc.guiInfoFcn)
+        r = mod.downloadChapter(["bad_chapter", "http://bato.to/comic/_/comics/asdfgh"], './')
+        
+        self.assertFalse(r)
         
     def kissmanga_test(self):
         dc = DownloadController()
         
-        # test chpter list request
+        # test chapter list request
         mod = KissmangaModel(self.kissmanga_series_url, dc.guiInfoFcn)
         chapters = mod.getChaptersList()
         
@@ -67,11 +86,20 @@ class ModelsTest(unittest.TestCase):
         
         # test if download was sucessfull
         self.assertTrue(r)
+    
+    def kissmanga_test_bad_url(self): 
+        dc = DownloadController()
+        
+        # test chapter request exception
+        mod = KissmangaModel("http://kissmanga.com", dc.guiInfoFcn)
+        r = mod.downloadChapter(["bad_chapter", "http://kissmanga.com/Manga/asdfgh"], './')
+        
+        self.assertFalse(r)
         
     def mangatraders_test(self):
         dc = DownloadController()
         
-        # test chpter list request
+        # test chapter list request
         mod = MangatradersModel(self.mangatraders_series_url, dc.guiInfoFcn)
         chapters = mod.getChaptersList()
         
@@ -80,3 +108,12 @@ class ModelsTest(unittest.TestCase):
         
         # test if download was sucessfull
         self.assertTrue(r)
+    
+    def mangatraders_test_bad_url(self): 
+        dc = DownloadController()
+        
+        # test chapter request exception
+        mod = MangatradersModel("http://mangatraders.org", dc.guiInfoFcn)
+        r = mod.downloadChapter(["bad_chapter", "http://mangatraders.org/manga/asdfgh"], './')
+        
+        self.assertFalse(r)

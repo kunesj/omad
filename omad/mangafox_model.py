@@ -65,28 +65,34 @@ class MangafoxModel():
         chapter = [name, url]
         """
         full_gallery_url = chapter[1]
-        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
         
-        r = requests.get(cut_gallery_url, timeout=30)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        try:
+            cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
+            
+            r = requests.get(cut_gallery_url, timeout=30)
+            html = unicode(r.text)
+            soup = BeautifulSoup(html)
+            
+            # parse html
+            ch_name = chapter[0]
+            grp_name = ''
+            
+            pages = []
+            select = soup.body.find('select', attrs={'class':'m'})
+            select_options = select.findAll('option')
+            for o in select_options:
+                try:
+                    int(o.text)
+                except:
+                    continue
+                pages.append(cut_gallery_url+o.text+'.html')
         
-        # parse html
-        ch_name = chapter[0]
-        grp_name = ''
-        
-        pages = []
-        select = soup.body.find('select', attrs={'class':'m'})
-        select_options = select.findAll('option')
-        for o in select_options:
-            try:
-                int(o.text)
-            except:
-                continue
-            pages.append(cut_gallery_url+o.text+'.html')
-    
-        galery_size = len(pages)
-        galeryurl = full_gallery_url 
+            galery_size = len(pages)
+            galeryurl = full_gallery_url 
+        except Exception, e:
+            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
+            self.gui_info_fcn("Error downloading/parsing chapter html")
+            return False # failed download
 
         logger.info('Downloading: '+ch_name)
         logger.info('Pages: '+str(galery_size))
@@ -98,7 +104,7 @@ class MangafoxModel():
 
         errors = 0
         for i in range(len(pages)):
-            self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
+            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
             
             try:
                 r = requests.get(pages[i], timeout=30)
@@ -134,7 +140,7 @@ class MangafoxModel():
                 self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
-                logger.info('OK download')
+                logger.debug('OK download')
                     
 
 

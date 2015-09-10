@@ -61,36 +61,40 @@ class BatotoModel():
         chapter = [name, url]
         """
         full_gallery_url = chapter[1]
+        
+        try:
+            # strip page number etc..
+            fgu_spl = full_gallery_url.split('/_/')
+            full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
             
-        # strip page number etc..
-        fgu_spl = full_gallery_url.split('/_/')
-        full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
-        
-        r = requests.get(full_gallery_url+'?supress_webtoon=t', timeout=30)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
-        
-        # parse html
-        div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
-
-        series_name = div_modbar.find('a').text.replace('/',' ')
-        ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-        ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
-        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        
-        grp_select = div_modbar.find('select', attrs={'name':'group_select'})
-        grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
-        grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        # remove language from group
-        grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
-
-        pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
-        pages = [x.strip() for x in pages]
-        galery_size = len(pages)
-
-        img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
-        galeryurl =  img_url[0:img_url.rfind('/')]+"/"
+            r = requests.get(full_gallery_url+'?supress_webtoon=t', timeout=30)
+            html = unicode(r.text)
+            soup = BeautifulSoup(html)
             
+            # parse html
+            div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
+
+            series_name = div_modbar.find('a').text.replace('/',' ')
+            ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
+            ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
+            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            
+            grp_select = div_modbar.find('select', attrs={'name':'group_select'})
+            grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
+            grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            # remove language from group
+            grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
+
+            pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
+            pages = [x.strip() for x in pages]
+            galery_size = len(pages)
+
+            img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
+            galeryurl =  img_url[0:img_url.rfind('/')]+"/"
+        except Exception, e:
+            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
+            self.gui_info_fcn("Error downloading/parsing chapter html")
+            return False # failed download            
 
         logger.info('Downloading: '+ch_name)
         logger.info('Pages: '+str(galery_size))
@@ -102,7 +106,7 @@ class BatotoModel():
 
         errors = 0
         for i in range(len(pages)):
-            self.gui_info_fcn("Downloading "+str(i+1)+"/"+str(len(pages)))
+            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
                 
             p = pages[i]
             page_url = full_gallery_url+'/'+str(p)+'?supress_webtoon=t'
@@ -143,7 +147,7 @@ class BatotoModel():
                 self.gui_info_fcn("Error downloading page image")
                 errors+=1
             else:
-                logger.info('OK download')
+                logger.debug('OK download')
                     
                     
         logger.info("Download finished, Failed downloads = "+str(errors))

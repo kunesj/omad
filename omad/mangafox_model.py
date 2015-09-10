@@ -159,5 +159,4 @@ class MangafoxModel():
             return False
         else:
             return True
-        
-
+            

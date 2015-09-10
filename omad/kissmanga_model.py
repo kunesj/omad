@@ -129,8 +129,6 @@ class KissmangaModel():
                 errors+=1
             else:
                 logger.debug('OK download')
-                    
-
 
         logger.info("Download finished, Failed downloads = "+str(errors))
         
@@ -147,5 +145,3 @@ class KissmangaModel():
             return False
         else:
             return True
-        
-

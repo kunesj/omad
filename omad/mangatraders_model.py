@@ -31,7 +31,25 @@ except:
 
 from archive_controller import ArchiveController
 
+
 class MangatradersModel():
+    """
+    Example usage:
+
+    if __name__ == "__main__":
+        logging.basicConfig()
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+        
+        from download_controller import DownloadController
+        dc = DownloadController()
+        
+        mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', dc.guiInfoFcn)
+        chapters = mod.getChaptersList()
+        print chapters[0]
+        print mod.downloadChapter(chapters[0], './')
+    """
+
     def __init__(self, series_url, gui_info_fcn):
         # default is download_controller.defaultInfoFcn
         self.gui_info_fcn = gui_info_fcn
@@ -170,17 +188,3 @@ class MangatradersModel():
             return False
         else:
             return True
-        
-
-if __name__ == "__main__":
-    logging.basicConfig()
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    
-    from download_controller import DownloadController
-    dc = DownloadController()
-    
-    mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', dc.guiInfoFcn)
-    chapters = mod.getChaptersList()
-    print chapters[0]
-    print mod.downloadChapter(chapters[0], './')

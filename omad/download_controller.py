@@ -127,5 +127,5 @@ class DownloadController():
             results[i] = r
         
         self.results = results
-        
+        return self.results
         

@@ -64,3 +64,6 @@ build: clean
 	
 clean:
 	sudo rm -rf build dist
+
+test:
+	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad

@@ -30,6 +30,9 @@ except:
 
 from archive_controller import ArchiveController
 
+DEFAULT_HEADERS = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
+                    'referer': 'https://bato.to/reader'}
+
 class BatotoModel():
     def __init__(self, series_url, gui_info_fcn):
         # default is download_controller.defaultInfoFcn
@@ -64,16 +67,17 @@ class BatotoModel():
         
         try:
             # strip page number etc..
-            fgu_spl = full_gallery_url.split('/_/')
-            full_gallery_url = fgu_spl[0]+'/_/'+'/'.join(fgu_spl[1].split('/')[:2])
+            if full_gallery_url.endswith('/'):
+                full_gallery_url = full_gallery_url[:-1]
+            gallery_id = full_gallery_url.split('reader#')[-1].split('_')[0]
             
-            r = requests.get(full_gallery_url+'?supress_webtoon=t', timeout=30)
+            reader_page_url = "https://bato.to/areader?id="+gallery_id+"&p=1&supress_webtoon=t"
+            r = requests.get(reader_page_url, timeout=30, headers=DEFAULT_HEADERS)
             html = unicode(r.text)
             soup = BeautifulSoup(html)
             
             # parse html
-            div_modbar = soup.body.find('div', attrs={'class':'moderation_bar rounded clear'})
-
+            div_modbar = soup.find('div', attrs={'class':'moderation_bar rounded clear'})
             series_name = div_modbar.find('a').text.replace('/',' ')
             ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
             ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
@@ -89,7 +93,7 @@ class BatotoModel():
             pages = [x.strip() for x in pages]
             galery_size = len(pages)
 
-            img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
+            img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
             galeryurl =  img_url[0:img_url.rfind('/')]+"/"
         except Exception, e:
             logger.exception('Failed to parse chapter page for: '+full_gallery_url)
@@ -109,11 +113,11 @@ class BatotoModel():
             self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
                 
             p = pages[i]
-            page_url = full_gallery_url+'/'+str(p)+'?supress_webtoon=t'
+            page_url = "https://bato.to/areader?id="+gallery_id+"&p="+str(p)+"&supress_webtoon=t"
             logger.info("Page url: "+page_url)
             
             try:
-                r = requests.get(page_url, timeout=30)
+                r = requests.get(page_url, timeout=30, headers=DEFAULT_HEADERS)
             except Exception, e:
                 logger.exception('BAD page download for: '+page_url)
                 self.gui_info_fcn("Error downloading page html")
@@ -123,7 +127,7 @@ class BatotoModel():
             html = unicode(r.text)
             soup = BeautifulSoup(html)
             
-            img_url = soup.body.find('img', attrs={'id':'comic_page'}).get('src')
+            img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
             img_ext = img_url.split('.')[-1]
                 
             

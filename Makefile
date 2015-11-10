@@ -67,3 +67,15 @@ clean:
 
 test:
 	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad
+
+test_mangafox:
+	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangafox'
+
+test_batoto:
+	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='batoto'
+
+test_kissmanga:
+	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='kissmanga'
+
+test_:
+	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangatraders'

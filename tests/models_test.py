@@ -28,7 +28,7 @@ class ModelsTest(unittest.TestCase):
     mangatraders_chapter_index = 0 # 
     
     
-    @attr("travisFail") # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
     def mangafox_test(self):
         dc = DownloadController()
         
@@ -42,7 +42,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
     
-    @attr("travisFail") # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
     def mangafox_test_bad_url(self): 
         dc = DownloadController()
         
@@ -51,7 +51,8 @@ class ModelsTest(unittest.TestCase):
         r = mod.downloadChapter(["bad_chapter", "http://mangafox.me/manga/asdfgh"], './')
         
         self.assertFalse(r)
-        
+    
+    @attr(site='batoto')
     def batoto_test(self):        
         dc = DownloadController()
         
@@ -65,6 +66,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
     
+    @attr(site='batoto')
     def batoto_test_bad_url(self): 
         dc = DownloadController()
         
@@ -73,7 +75,8 @@ class ModelsTest(unittest.TestCase):
         r = mod.downloadChapter(["bad_chapter", "http://bato.to/comic/_/comics/asdfgh"], './')
         
         self.assertFalse(r)
-        
+    
+    @attr(site='kissmanga')
     def kissmanga_test(self):
         dc = DownloadController()
         
@@ -87,6 +90,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
     
+    @attr(site='kissmanga')
     def kissmanga_test_bad_url(self): 
         dc = DownloadController()
         
@@ -95,7 +99,8 @@ class ModelsTest(unittest.TestCase):
         r = mod.downloadChapter(["bad_chapter", "http://kissmanga.com/Manga/asdfgh"], './')
         
         self.assertFalse(r)
-        
+    
+    @attr(site='mangatraders')
     def mangatraders_test(self):
         dc = DownloadController()
         
@@ -109,6 +114,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
     
+    @attr(site='mangatraders')
     def mangatraders_test_bad_url(self): 
         dc = DownloadController()
         

@@ -27,6 +27,7 @@ class DownloadControllerTest(unittest.TestCase):
         self.assertFalse(r)
         self.assertTrue( dc.webpage_model is None )
     
+    @attr(site='mangafox')
     def select_url_mangafox_test(self):
         dc = DownloadController()
         r = dc.setSeriesUrl(self.mangafox_series_url)
@@ -34,20 +35,23 @@ class DownloadControllerTest(unittest.TestCase):
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, MangafoxModel) )
     
+    @attr(site='batoto')
     def select_url_batoto_test(self):
         dc = DownloadController()
         r = dc.setSeriesUrl(self.batoto_series_url)
         
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, BatotoModel) )
-        
+    
+    @attr(site='kissmanga')
     def select_url_kissmanga_test(self):
         dc = DownloadController()
         r = dc.setSeriesUrl(self.kissmanga_series_url)
         
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, KissmangaModel) )
-        
+    
+    @attr(site='mangatraders')
     def select_url_mangatraders_test(self):
         dc = DownloadController()
         r = dc.setSeriesUrl(self.mangatraders_series_url)
@@ -72,7 +76,7 @@ class DownloadControllerTest(unittest.TestCase):
     
     def download_range_test(self):
         dc = DownloadController()
-        dc.setSeriesUrl(self.kissmanga_series_url)
+        dc.setSeriesUrl(self.mangatraders_series_url)
         r = dc.downloadChapterRange(0, 1)
         
         self.assertFalse(False in r)

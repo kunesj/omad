@@ -111,7 +111,14 @@ class DownloadController():
         self.guiInfoFcn('Downloading: '+chapter[0])
         
         logger.debug('Starting download of chapter:'+str(chapter)+', '+self.downloadPath)
-        r = self.webpage_model.downloadChapter(chapter, self.downloadPath)
+        try:
+            r = self.webpage_model.downloadChapter(chapter, self.downloadPath)
+        except Exception, e:
+            logger.debug('Failed download of chapter:'+str(chapter)+', '+self.downloadPath)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
+            self.guiInfoFcn(e, exception=True, trace=trace)
+            r = False
         
         if not r:
             self.guiInfoFcn('Download finished with errors')

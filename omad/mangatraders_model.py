@@ -21,6 +21,8 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
+from sitemodel import SiteModel
+
 import requests
 import urlparse
 try:
@@ -29,10 +31,7 @@ except:
     # windows fix
     from bs4 import BeautifulSoup 
 
-from archive_controller import ArchiveController
-
-
-class MangatradersModel():
+class MangatradersModel(SiteModel):
     """
     Example usage:
 
@@ -51,17 +50,21 @@ class MangatradersModel():
     """
 
     def __init__(self, series_url, gui_info_fcn):
-        # default is download_controller.defaultInfoFcn
-        self.gui_info_fcn = gui_info_fcn
-        
+        super(MangatradersModel, self).__init__(series_url, gui_info_fcn)
+    
+    def setSeriesUrl(self, series_url):
         # fix url
         params = urlparse.parse_qs(urlparse.urlparse(series_url).query)
         if 'series' in params:
             series_url = 'http://mangatraders.org/read-online/'+params['series'][0]
             logger.info('Series url autochanged to: '+series_url)
         self.series_url = series_url
-        
+
     def getChaptersList(self):
+        """
+        Returns:
+            [[chapter_name, url], [chapter_name, url], ...]
+        """
         r = requests.get(self.series_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
@@ -84,107 +87,61 @@ class MangatradersModel():
         processed_chapters.reverse()
         
         return processed_chapters
-    
-    def downloadChapter(self, chapter, downloadPath):
-        return self.downloadChapter_online(chapter, downloadPath)
-        # TODO - if logged in, use direct download
-    
-    def downloadChapter_online(self, chapter, downloadPath):
-        """        
-        chapter = [name, url]
-        
-        Downloads chapter in online reading mode, does not need login
+
+    def getGalleryInfo(self, chapter):
         """
+        Input:
+            chapter = [chapter_name, url]
+
+        Returns:
+            [chapter_name, group_name, page_urls=[]]
+        """
+        
+        # get url
         full_gallery_url = chapter[1]
+        cut_gallery_url = full_gallery_url.split('/page-')[0]
         
-        try:
-            cut_gallery_url = full_gallery_url.split('/page-')[0]
-            
-            r = requests.get(full_gallery_url, timeout=30)
-            html = unicode(r.text)
-            soup = BeautifulSoup(html)
-            
-            # parse html
-            mainPageContainer = soup.body.find('div', attrs={'class':'container mainPageContainer'})
-            
-            series_name = mainPageContainer.find('ol').find('li').find('a') \
-                .text.strip()
-            series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-            ch_name = series_name+' - '+mainPageContainer.find('ol') \
-                .find('select', attrs={'id':'changeChapterSelect'}) \
-                .find('option', attrs={'selected':'selected'}).text.strip()
-            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-            grp_name = ''
-            
-            pages = []
-            pages_options = mainPageContainer.find('ol') \
-                .find('select', attrs={'id':'changePageSelect'}).findAll('option')
-            for p in pages_options:
-                pages.append(cut_gallery_url+'/'+p.get('value'))
-            
-            galery_size = len(pages)
-            galeryurl = full_gallery_url
-        except Exception, e:
-            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
-            self.gui_info_fcn("Error downloading/parsing chapter html")
-            return False # failed download
-            
-        logger.info('Downloading: '+ch_name)
-        logger.info('Pages: '+str(galery_size))
-        logger.info('Images url: '+cut_gallery_url)
+        # download html
+        r = requests.get(full_gallery_url, timeout=30)
+        html = unicode(r.text)
+        soup = BeautifulSoup(html)
+        
+        # parse html
+        mainPageContainer = soup.body.find('div', attrs={'class':'container mainPageContainer'})
+        
+        series_name = mainPageContainer.find('ol').find('li').find('a') \
+            .text.strip()
+        series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        ch_name = series_name+' - '+mainPageContainer.find('ol') \
+            .find('select', attrs={'id':'changeChapterSelect'}) \
+            .find('option', attrs={'selected':'selected'}).text.strip()
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        grp_name = ''
+        
+        # get page_urls
+        pages = []
+        pages_options = mainPageContainer.find('ol') \
+            .find('select', attrs={'id':'changePageSelect'}).findAll('option')
+        for p in pages_options:
+            pages.append(cut_gallery_url+'/'+p.get('value'))
+        
+        return [ch_name, grp_name, pages]
 
-        # create temp folder for downloads
-        ac = ArchiveController(downloadPath)
-        ac.mkdir()
+    def getImageUrl(self, page_url):
+        """
+        Input:
+            page_url
 
-        errors = 0
-        for i in range(len(pages)):
-            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
-            
-            r = requests.get(pages[i], timeout=30)
-            html = unicode(r.text)
-            soup = BeautifulSoup(html)
-            
-            img_url = soup.body \
-                .find('div', attrs={'style':'text-align:center;'}) \
-                .find('img').get('src')
-            img_ext = img_url.split('.')[-1].split('?')[0]                
-            
-            logger.info(img_url)
-            
-            if i<10:
-                num = '000'+str(i)
-            elif i<100:
-                num = '00'+str(i)
-            elif i<1000:
-                num = '0'+str(i)
-            else:
-                num = str(i)
-            
-            img_filename = num+'.'+img_ext
-            
-            try:
-                ac.download(img_url, img_filename)
-            except Exception, e:
-                logger.exception('BAD download for: '+img_url)
-                self.gui_info_fcn("Error downloading page image")
-                errors+=1
-            else:
-                logger.debug('OK download')
-                    
+        Returns:
+            [image_url, image_extension]
+        """
+        r = requests.get(page_url, timeout=30)
+        html = unicode(r.text)
+        soup = BeautifulSoup(html)
         
-        logger.info("Download finished, Failed downloads = "+str(errors))
+        img_url = soup.body \
+            .find('div', attrs={'style':'text-align:center;'}) \
+            .find('img').get('src')
+        img_ext = img_url.split('.')[-1].split('?')[0]
         
-        if grp_name != '':
-            grp_name = ' ['+grp_name+']'
-        archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
-        
-        self.gui_info_fcn('Compressing to: '+archive_name)
-        ac.zipdir(archive_name)
-        
-        ac.rmdir()
-        
-        if errors>0:
-            return False
-        else:
-            return True
+        return  [img_url, img_ext]

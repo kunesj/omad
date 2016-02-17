@@ -77,5 +77,5 @@ test_batoto:
 test_kissmanga:
 	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='kissmanga'
 
-test_:
+test_mangatraders:
 	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangatraders'

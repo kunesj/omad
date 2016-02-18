@@ -13,10 +13,11 @@ addons:
 before_install:
     - pip install requests beautifulsoup
     - pip install coverage python-coveralls
+    - pip install --upgrade ndg-httpsclient 
     
 # command to run tests
-script: nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a '!travisFail'
-# script: nosetests --with-coverage --cover-package=omad -a '!travisFail'
+script: nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad 
+#-a '!travisFail'
 
 after_success:
     - coveralls

@@ -21,25 +21,27 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
+from sitemodel import SiteModel
+
 import requests
 try:
     from BeautifulSoup import BeautifulSoup
 except:
     # windows fix
-    from bs4 import BeautifulSoup 
-
-from archive_controller import ArchiveController
+    from bs4 import BeautifulSoup
 
 DEFAULT_HEADERS = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
                     'referer': 'https://bato.to/reader'}
 
-class BatotoModel():
+class BatotoModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
-        # default is download_controller.defaultInfoFcn
-        self.gui_info_fcn = gui_info_fcn
-        self.series_url = series_url
+        super(BatotoModel, self).__init__(series_url, gui_info_fcn)
 
     def getChaptersList(self):
+        """
+        Returns:
+            [[chapter_name, url], [chapter_name, url], ...]
+        """
         r = requests.get(self.series_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
@@ -58,115 +60,66 @@ class BatotoModel():
         processed_chapters.reverse()
         
         return processed_chapters
+    
+    def getGalleryInfo(self, chapter):
+        """
+        Input:
+            chapter = [chapter_name, url]
+
+        Returns:
+            [chapter_name, group_name, page_urls=[]]
+        """
         
-    def downloadChapter(self, chapter, downloadPath):
-        """
-        chapter = [name, url]
-        """
+        # get url
         full_gallery_url = chapter[1]
+        if full_gallery_url.endswith('/'):
+            full_gallery_url = full_gallery_url[:-1]
         
-        try:
-            # strip page number etc..
-            if full_gallery_url.endswith('/'):
-                full_gallery_url = full_gallery_url[:-1]
-            gallery_id = full_gallery_url.split('reader#')[-1].split('_')[0]
-            
-            reader_page_url = "https://bato.to/areader?id="+gallery_id+"&p=1&supress_webtoon=t"
-            r = requests.get(reader_page_url, timeout=30, headers=DEFAULT_HEADERS)
-            html = unicode(r.text)
-            soup = BeautifulSoup(html)
-            
-            # parse html
-            div_modbar = soup.find('div', attrs={'class':'moderation_bar rounded clear'})
-            series_name = div_modbar.find('a').text.replace('/',' ')
-            ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-            ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
-            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-            
-            grp_select = div_modbar.find('select', attrs={'name':'group_select'})
-            grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
-            grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-            # remove language from group
-            grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
+        gallery_id = full_gallery_url.split('reader#')[-1].split('_')[0]
+        reader_page_url = "https://bato.to/areader?id="+gallery_id+"&p=1&supress_webtoon=t"
+        
+        # get html
+        r = requests.get(reader_page_url, timeout=30, headers=DEFAULT_HEADERS)
+        html = unicode(r.text)
+        soup = BeautifulSoup(html)
+        
+        # parse html
+        div_modbar = soup.find('div', attrs={'class':'moderation_bar rounded clear'})
+        series_name = div_modbar.find('a').text.replace('/',' ')
+        ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
+        ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        
+        grp_select = div_modbar.find('select', attrs={'name':'group_select'})
+        grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
+        grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        # remove language from group
+        grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
+        
+        # get page_urls
+        pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
+        pages = [x.strip() for x in pages]
+        
+        page_urls = []
+        for p in pages:
+            page_urls.append( "https://bato.to/areader?id="+gallery_id+"&p="+str(p)+"&supress_webtoon=t" )
+        
+        
+        return [ch_name, grp_name, page_urls]
+    
+    def getImageUrl(self, page_url):
+        """
+        Input:
+            page_url
 
-            pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
-            pages = [x.strip() for x in pages]
-            galery_size = len(pages)
-
-            img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
-            galeryurl =  img_url[0:img_url.rfind('/')]+"/"
-        except Exception, e:
-            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
-            self.gui_info_fcn("Error downloading/parsing chapter html")
-            return False # failed download            
-
-        logger.info('Downloading: '+ch_name)
-        logger.info('Pages: '+str(galery_size))
-        logger.info('Images url: '+galeryurl)
-
-        # create temp folder for downloads
-        ac = ArchiveController(downloadPath)
-        ac.mkdir()
-
-        errors = 0
-        for i in range(len(pages)):
-            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
-                
-            p = pages[i]
-            page_url = "https://bato.to/areader?id="+gallery_id+"&p="+str(p)+"&supress_webtoon=t"
-            logger.info("Page url: "+page_url)
-            
-            try:
-                r = requests.get(page_url, timeout=30, headers=DEFAULT_HEADERS)
-            except Exception, e:
-                logger.exception('BAD page download for: '+page_url)
-                self.gui_info_fcn("Error downloading page html")
-                errors+=1
-                continue
-                
-            html = unicode(r.text)
-            soup = BeautifulSoup(html)
-            
-            img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
-            img_ext = img_url.split('.')[-1]
-                
-            
-            logger.info(img_url)
-            
-            if i<10:
-                num = '000'+str(i)
-            elif i<100:
-                num = '00'+str(i)
-            elif i<1000:
-                num = '0'+str(i)
-            else:
-                num = str(i)
-            
-            img_filename = num+'.'+img_ext
-            
-            try:
-                ac.download(img_url, img_filename)
-            except Exception, e:
-                logger.exception('BAD download for: '+img_url)
-                self.gui_info_fcn("Error downloading page image")
-                errors+=1
-            else:
-                logger.debug('OK download')
-                    
-                    
-        logger.info("Download finished, Failed downloads = "+str(errors))
+        Returns:
+            [image_url, image_extension]
+        """
+        r = requests.get(page_url, timeout=30, headers=DEFAULT_HEADERS)
+        html = unicode(r.text)
+        soup = BeautifulSoup(html)
         
-        if grp_name != '':
-            grp_name = ' ['+grp_name+']'
-        archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
+        img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
+        img_ext = img_url.split('.')[-1]
         
-        self.gui_info_fcn('Compressing to: '+archive_name)
-        ac.zipdir(archive_name)
-        
-        ac.rmdir()
-        
-        if errors>0:
-            return False
-        else:
-            return True
-        
+        return [img_url, img_ext]

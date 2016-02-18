@@ -21,6 +21,8 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
+from sitemodel import SiteModel
+
 import requests
 try:
     from BeautifulSoup import BeautifulSoup
@@ -28,16 +30,13 @@ except:
     # windows fix
     from bs4 import BeautifulSoup 
 
-from archive_controller import ArchiveController
-
-class KissmangaModel():    
+# TODO - currently broken
+class KissmangaModel(SiteModel):    
     def __init__(self, series_url, gui_info_fcn):
-        # default is download_controller.defaultInfoFcn
-        self.gui_info_fcn = gui_info_fcn
-        self.series_url = series_url
+        super(KissmangaModel, self).__init__(series_url, gui_info_fcn)
         
         self.cookies = {}
-    
+
     def getRealPage(self, html, url):
         import js2py
         
@@ -99,13 +98,18 @@ class KissmangaModel():
         
         print "Not finished!!!"
         exit(1) # TODO
-        
+
     def getChaptersList(self):
+        """
+        Returns:
+            [[chapter_name, url], [chapter_name, url], ...]
+        """
         r = requests.get(self.series_url, timeout=30, cookies=self.cookies)
         self.cookies.update(r.cookies)
         html = unicode(r.text)
-        #html = self.getRealPage(html, self.series_url)
+        html = self.getRealPage(html, self.series_url)
         soup = BeautifulSoup(html)
+        print html
 
         table_ch = soup.body.find('table', attrs={'class':'listing'})
         en_chs = table_ch.findAll('a')
@@ -122,94 +126,56 @@ class KissmangaModel():
         processed_chapters.reverse()
         
         return processed_chapters
+    
+    def getGalleryInfo(self, chapter):
+        """
+        Input:
+            chapter = [chapter_name, url]
+
+        Returns:
+            [chapter_name, group_name, page_urls=[]]
+        """
         
-    def downloadChapter(self, chapter, downloadPath):
-        """
-        chapter = [name, url]
-        """
+        # get url
         full_gallery_url = chapter[1]
         
-        try:
-            r = requests.get(full_gallery_url, timeout=30, cookies=self.cookies)
-            self.cookies.update(r.cookies)
-            html = unicode(r.text)
-            #html = self.getRealPage(html, full_gallery_url)
-            soup = BeautifulSoup(html)
-            
-            # parse html
-            series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
-            ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
-            ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-            grp_name = ''
-            
-            pages = []
-            scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
-            for script in scripts:
-                if script.text.strip().startswith('var lstImages = new Array();'):
-                    lines = script.text.split('\n')
-                    for l in lines:
-                        if l.strip().startswith('lstImages.push('):
-                            pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
-            
-            if len(pages)==0:
-                raise Exception("No pages in chapter! Wrong URL?")
-            
-            galery_size = len(pages)
-            galeryurl = full_gallery_url
-        except Exception, e:
-            logger.exception('Failed to parse chapter page for: '+full_gallery_url)
-            self.gui_info_fcn("Error downloading/parsing chapter html")
-            return False # failed download            
-
-        logger.info('Downloading: '+ch_name)
-        logger.info('Pages: '+str(galery_size))
-        logger.info('Images url: '+galeryurl)
-
-        # create temp folder for downloads
-        ac = ArchiveController(downloadPath)
-        ac.mkdir()
-
-        errors = 0
-        for i in range(len(pages)):
-            self.gui_info_fcn("Downloading page "+str(i+1)+"/"+str(len(pages)))
-                
-            img_url = pages[i]
-            img_ext = img_url.split('.')[-1].split('?')[0]                
-            
-            logger.info(img_url)
-            
-            if i<10:
-                num = '000'+str(i)
-            elif i<100:
-                num = '00'+str(i)
-            elif i<1000:
-                num = '0'+str(i)
-            else:
-                num = str(i)
-            
-            img_filename = num+'.'+img_ext
-            
-            try:
-                ac.download(img_url, img_filename)
-            except Exception, e:
-                logger.exception('BAD download for: '+img_url)
-                self.gui_info_fcn("Error downloading page image")
-                errors+=1
-            else:
-                logger.debug('OK download')
-
-        logger.info("Download finished, Failed downloads = "+str(errors))
+        # download html
+        r = requests.get(full_gallery_url, timeout=30, cookies=self.cookies)
+        self.cookies.update(r.cookies)
+        html = unicode(r.text)
+        html = self.getRealPage(html, full_gallery_url)
+        soup = BeautifulSoup(html)
         
-        if grp_name != '':
-            grp_name = ' ['+grp_name+']'
-        archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
+        # parse html
+        series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
+        ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
+        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        grp_name = ''
         
-        self.gui_info_fcn('Compressing to: '+archive_name)
-        ac.zipdir(archive_name)
+        # get page_urls
+        pages = []
+        scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
+        for script in scripts:
+            if script.text.strip().startswith('var lstImages = new Array();'):
+                lines = script.text.split('\n')
+                for l in lines:
+                    if l.strip().startswith('lstImages.push('):
+                        pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
         
-        ac.rmdir()
+        if len(pages)==0:
+            raise Exception("No pages in chapter! Wrong URL?")
         
-        if errors>0:
-            return False
-        else:
-            return True
+        return [ch_name, grp_name, pages]
+    
+    def getImageUrl(self, page_url):
+        """
+        Input:
+            page_url
+
+        Returns:
+            [image_url, image_extension]
+        """
+        img_url = page_url
+        img_ext = img_url.split('.')[-1].split('?')[0]
+        
+        return [img_url, img_ext]

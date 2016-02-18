@@ -73,8 +73,11 @@ class ArchiveController():
         return filename
                 
     def download(self, url, filename):
-        f = open(os.path.join(self.path, filename),'wb')
-        f.write(requests.get(url, timeout=30).content)
-        f.close()
+        response = requests.get(url, timeout=30)
+        if response.status_code == 503:
+            raise Exception("503 Service Unavailable")
+        
+        with open(os.path.join(self.path, filename),'wb') as f:
+            f.write(response.content)
 
         

@@ -56,11 +56,11 @@ class BatotoModel(SiteModel):
             name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = tds[0].find('a').get('href')
             processed_chapters.append([name, href])
-            
+
         processed_chapters.reverse()
-        
+
         return processed_chapters
-    
+
     def getGalleryInfo(self, chapter):
         """
         Input:
@@ -69,44 +69,44 @@ class BatotoModel(SiteModel):
         Returns:
             [chapter_name, group_name, page_urls=[]]
         """
-        
+
         # get url
         full_gallery_url = chapter[1]
         if full_gallery_url.endswith('/'):
             full_gallery_url = full_gallery_url[:-1]
-        
+
         gallery_id = full_gallery_url.split('reader#')[-1].split('_')[0]
         reader_page_url = "https://bato.to/areader?id="+gallery_id+"&p=1&supress_webtoon=t"
-        
+
         # get html
         r = requests.get(reader_page_url, timeout=30, headers=DEFAULT_HEADERS)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        
+
         # parse html
         div_modbar = soup.find('div', attrs={'class':'moderation_bar rounded clear'})
         series_name = div_modbar.find('a').text.replace('/',' ')
         ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
         ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
         ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
-        
+
         grp_select = div_modbar.find('select', attrs={'name':'group_select'})
         grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
         grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         # remove language from group
         grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
-        
+
         # get page_urls
         pages = div_modbar.find('select', attrs={'name':'page_select'}).text.lower().split('page')[1:]
         pages = [x.strip() for x in pages]
-        
+
         page_urls = []
         for p in pages:
             page_urls.append( "https://bato.to/areader?id="+gallery_id+"&p="+str(p)+"&supress_webtoon=t" )
-        
-        
+
+
         return [ch_name, grp_name, page_urls]
-    
+
     def getImageUrl(self, page_url):
         """
         Input:
@@ -118,8 +118,8 @@ class BatotoModel(SiteModel):
         r = requests.get(page_url, timeout=30, headers=DEFAULT_HEADERS)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        
+
         img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
         img_ext = img_url.split('.')[-1]
-        
+
         return [img_url, img_ext]

@@ -33,19 +33,19 @@ class ArchiveController():
     def __init__(self, downloadPath='./'):
         self.path = None
         self.downloadPath = downloadPath
-    
+
     def mkdir(self):
         self.path = tempfile.mkdtemp()
-        
+
     def rmdir(self):
         shutil.rmtree(self.path)
         self.path = None
-        
+
     def zipdir(self, archive_name):
         archive_name = self.sanitize_filename(archive_name)
         archive_path = os.path.join(self.downloadPath, archive_name)
         logger.debug('Compressing files in temp folder to archive in path: '+archive_path)
-        
+
         zipf = zipfile.ZipFile(archive_path, 'w')
         for root, dirs, files in os.walk(self.path):
             for file in files:
@@ -53,7 +53,7 @@ class ArchiveController():
                 if os.path.isfile(full_path):
                     zipf.write(full_path, os.path.basename(full_path))
         zipf.close()
-        
+
     def sanitize_filename(self, filename, replaceSpaces=True):
         # strip white characters from start/end
         filename = filename.strip()
@@ -63,21 +63,21 @@ class ArchiveController():
         for ch in illegal:
             if ch in filename:
                 filename = filename.replace(ch, "_")
-                
+
         # replace tab with space
         filename = filename.replace("\t", " ")
-        
+
         # optionaly replace spaces with _
         filename = filename.replace(' ', '_')
-        
+
         return filename
-                
+
     def download(self, url, filename):
         response = requests.get(url, timeout=30)
         if response.status_code == 503:
             raise Exception("503 Service Unavailable")
-        
+
         with open(os.path.join(self.path, filename),'wb') as f:
             f.write(response.content)
 
-        
+

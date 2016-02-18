@@ -28,7 +28,7 @@ try:
     from BeautifulSoup import BeautifulSoup
 except:
     # windows fix
-    from bs4 import BeautifulSoup 
+    from bs4 import BeautifulSoup
 
 class MangafoxModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
@@ -58,12 +58,12 @@ class MangafoxModel(SiteModel):
             name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = ch.find('a').get('href')
             processed_chapters.append([name, href])
-            
+
         processed_chapters.reverse()
-        
+
         return processed_chapters
-    
-    
+
+
     def getGalleryInfo(self, chapter):
         """
         Input:
@@ -72,20 +72,20 @@ class MangafoxModel(SiteModel):
         Returns:
             [chapter_name, group_name, page_urls=[]]
         """
-        
+
         # get url
         full_gallery_url = chapter[1]
         cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
-        
+
         # download html
         r = requests.get(cut_gallery_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        
+
         # parse html
         ch_name = chapter[0]
         grp_name = ''
-        
+
         # get page_urls
         pages = []
         select = soup.body.find('select', attrs={'class':'m'})
@@ -96,9 +96,9 @@ class MangafoxModel(SiteModel):
             except:
                 continue
             pages.append(cut_gallery_url+o.text+'.html')
-        
+
         return [ch_name, grp_name, pages]
-    
+
     def getImageUrl(self, page_url):
         """
         Input:
@@ -110,8 +110,8 @@ class MangafoxModel(SiteModel):
         r = requests.get(page_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        
+
         img_url = soup.body.find('img', attrs={'id':'image'}).get('src')
         img_ext = img_url.split('.')[-1].split('?')[0]
-        
+
         return [img_url, img_ext]

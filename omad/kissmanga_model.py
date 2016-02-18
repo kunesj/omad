@@ -28,37 +28,37 @@ try:
     from BeautifulSoup import BeautifulSoup
 except:
     # windows fix
-    from bs4 import BeautifulSoup 
+    from bs4 import BeautifulSoup
 
 # TODO - currently broken
-class KissmangaModel(SiteModel):    
+class KissmangaModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
         super(KissmangaModel, self).__init__(series_url, gui_info_fcn)
-        
+
         self.cookies = {}
 
     def getRealPage(self, html, url):
         import js2py
-        
+
         html = unicode(html)
         soup = BeautifulSoup(html)
-        
+
         hidden_form = soup.body.find('form', attrs={'id':"challenge-form"})
         if hidden_form is None:
             return html
-        
+
         get_params = {"jschl_vc":None, "pass":None, "jschl_answer":None}
         inputs = hidden_form.findAll('input')
         for i in inputs:
             get_params[i.get('name')] = i.get('value')
-        
+
         # get important parts of script
         script = soup.head.find('script').text
         script_setTimeout_fcn = script.split("setTimeout(function(){")[-1].split("}")[0]+"}"
         script_fcn_end = script.split("setTimeout(function(){")[-1].split("}")[1]
         #print script_setTimeout_fcn
-        #print script_fcn_end 
-        
+        #print script_fcn_end
+
         # get script lines
         script_lines = []
         script_lines += [script_setTimeout_fcn.split(';')[0].strip()]
@@ -72,7 +72,7 @@ class KissmangaModel(SiteModel):
                     ls = ls.replace('a.value =', 'a =')
                 elif ls.startswith("t = t.firstChild.href"):
                     ls = "t = 'http://kissmanga.com/'"
-                
+
                 if ls == '' or ls.startswith('f.submit') or ls.startswith('f = ') or ls.startswith('a = document.get')\
                     or ls.startswith('t = document.') or ls.startswith('t.innerHTML'):
                     continue
@@ -81,21 +81,21 @@ class KissmangaModel(SiteModel):
             script_lines += l_filtered
         script_edited = ";\n".join(script_lines)+";"
         #print script_edited
-        
+
         result = js2py.eval_js('function fcn() {\n'+script_edited+'\nreturn a;};')()
         get_params["jschl_answer"] = result
         #print result
-        
+
         custom_headers = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
                     'referer': url, 'host':"kissmanga.com"}
-        
+
         r = requests.get("http://kissmanga.com/cdn-cgi/l/chk_jschl", timeout=30, params=get_params, headers=custom_headers, cookies=self.cookies)
         self.cookies.update(r.cookies)
         html = unicode(r.text)
-        
+
         #print html
         #print get_params
-        
+
         print "Not finished!!!"
         exit(1) # TODO
 
@@ -122,11 +122,11 @@ class KissmangaModel(SiteModel):
             if not 'kissmanga.com' in href:
                 href = 'http://kissmanga.com/'+href
             processed_chapters.append([name, href])
-            
+
         processed_chapters.reverse()
-        
+
         return processed_chapters
-    
+
     def getGalleryInfo(self, chapter):
         """
         Input:
@@ -135,23 +135,23 @@ class KissmangaModel(SiteModel):
         Returns:
             [chapter_name, group_name, page_urls=[]]
         """
-        
+
         # get url
         full_gallery_url = chapter[1]
-        
+
         # download html
         r = requests.get(full_gallery_url, timeout=30, cookies=self.cookies)
         self.cookies.update(r.cookies)
         html = unicode(r.text)
         html = self.getRealPage(html, full_gallery_url)
         soup = BeautifulSoup(html)
-        
+
         # parse html
         series_name = full_gallery_url.split('/Manga/')[-1].split('/')[0]
         ch_name = series_name+' - '+full_gallery_url.split('/')[-1].split('?')[0]
         ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         grp_name = ''
-        
+
         # get page_urls
         pages = []
         scripts = soup.body.findAll('script', attrs={'type':'text/javascript'})
@@ -161,12 +161,12 @@ class KissmangaModel(SiteModel):
                 for l in lines:
                     if l.strip().startswith('lstImages.push('):
                         pages.append(l.strip().split('lstImages.push("')[-1].split('");')[0])
-        
+
         if len(pages)==0:
             raise Exception("No pages in chapter! Wrong URL?")
-        
+
         return [ch_name, grp_name, pages]
-    
+
     def getImageUrl(self, page_url):
         """
         Input:
@@ -177,5 +177,5 @@ class KissmangaModel(SiteModel):
         """
         img_url = page_url
         img_ext = img_url.split('.')[-1].split('?')[0]
-        
+
         return [img_url, img_ext]

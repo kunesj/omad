@@ -29,10 +29,10 @@ class SiteModel(object):
     def __init__(self, series_url, gui_info_fcn):
         self.setGuiInfoFcn(gui_info_fcn)
         self.setSeriesUrl(series_url)
-    
+
     def setGuiInfoFcn(self, gui_info_fcn):
         self.guiInfoFcn = gui_info_fcn
-    
+
     def setSeriesUrl(self, series_url):
         self.series_url = series_url
 
@@ -90,7 +90,7 @@ class SiteModel(object):
             trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
             self.guiInfoFcn(e, exception=True, trace=trace)
             return False
-        
+
         ch_name = gallery_info[0]
         grp_name = gallery_info[1]
         pages = gallery_info[2]
@@ -115,7 +115,7 @@ class SiteModel(object):
             # create image filename
             num = str(i).zfill(4)
             img_filename = num+'.'+img_ext
-            
+
             # download image to temp folder
             try:
                 ac.download(img_url, img_filename)
@@ -127,16 +127,16 @@ class SiteModel(object):
                 logger.debug('OK download')
 
         logger.info("Download finished without any errors")
-        
+
         # create archive filename
         if grp_name != '':
             grp_name = ' ['+grp_name+']'
         archive_name = ac.sanitize_filename(ch_name+grp_name+'.zip')
-        
+
         # compress temp folder to archive
         self.guiInfoFcn('Compressing to: '+archive_name)
         ac.zipdir(archive_name)
-        
+
         # remove temp folder
         ac.rmdir()
 

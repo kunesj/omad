@@ -74,8 +74,5 @@ test_mangafox:
 test_batoto:
 	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='batoto'
 
-test_kissmanga:
-	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='kissmanga'
-
 test_mangatraders:
 	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangatraders'

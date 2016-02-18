@@ -8,7 +8,6 @@ from omad.download_controller import DownloadController
 
 from omad.mangafox_model import MangafoxModel
 from omad.batoto_model import BatotoModel
-from omad.kissmanga_model import KissmangaModel
 from omad.mangatraders_model import MangatradersModel
 
 class ModelsTest(unittest.TestCase):
@@ -20,9 +19,6 @@ class ModelsTest(unittest.TestCase):
 
     batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635' # special char in series name
     batoto_chapter_index = 0 # http://bato.to/read/_/145348/fatekaleid-liner-prisma%E2%98%86illya-3rei_ch1_by_suimasen-scans
-
-    kissmanga_series_url = 'http://kissmanga.com/Manga/Fate-Kaleid-Liner-Prisma-Illya-Drei' # slash in series name
-    kissmanga_chapter_index = 0 #
 
     mangatraders_series_url = 'http://mangatraders.org/manga/?series=FateKaleidLinerPrismaIllyaDrei&uploader=Ravmunken' # slash in series name
     mangatraders_chapter_index = 0 #
@@ -73,30 +69,6 @@ class ModelsTest(unittest.TestCase):
         # test chapter request exception
         mod = BatotoModel("http://bato.to", dc.guiInfoFcn)
         r = mod.downloadChapter(["bad_chapter", "http://bato.to/comic/_/comics/asdfgh"], './')
-
-        self.assertFalse(r)
-
-    @attr(site='kissmanga')
-    def kissmanga_test(self):
-        dc = DownloadController()
-
-        # test chapter list request
-        mod = KissmangaModel(self.kissmanga_series_url, dc.guiInfoFcn)
-        chapters = mod.getChaptersList()
-
-        # test chapter download
-        r = mod.downloadChapter(chapters[self.kissmanga_chapter_index], './')
-
-        # test if download was sucessfull
-        self.assertTrue(r)
-
-    @attr(site='kissmanga')
-    def kissmanga_test_bad_url(self):
-        dc = DownloadController()
-
-        # test chapter request exception
-        mod = KissmangaModel("http://kissmanga.com", dc.guiInfoFcn)
-        r = mod.downloadChapter(["bad_chapter", "http://kissmanga.com/Manga/asdfgh"], './')
 
         self.assertFalse(r)
 

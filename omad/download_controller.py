@@ -23,7 +23,6 @@ import traceback
 import os
 
 from batoto_model import BatotoModel
-from kissmanga_model import KissmangaModel
 from mangafox_model import MangafoxModel
 from mangatraders_model import MangatradersModel
 
@@ -75,9 +74,6 @@ class DownloadController():
         if ("bato.to" in url) or ("batoto.com" in url):
             self.webpage_model = BatotoModel(url, self.guiInfoFcn)
             self.guiInfoFcn('Detected batoto url')
-        elif "kissmanga.com" in url:
-            self.webpage_model = KissmangaModel(url, self.guiInfoFcn)
-            self.guiInfoFcn('Detected kissmanga.com url')
         elif "mangafox.me" in url:
             self.webpage_model = MangafoxModel(url, self.guiInfoFcn)
             self.guiInfoFcn('Detected mangafox.me url')

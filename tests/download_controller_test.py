@@ -10,14 +10,12 @@ from omad.download_controller import DownloadController
 
 from omad.mangafox_model import MangafoxModel
 from omad.batoto_model import BatotoModel
-from omad.kissmanga_model import KissmangaModel
 from omad.mangatraders_model import MangatradersModel
 
 class DownloadControllerTest(unittest.TestCase):
     # allways test urls first
     mangafox_series_url = 'http://mangafox.me/manga/ai_yori_aoshi/'
     batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635'
-    kissmanga_series_url = 'http://kissmanga.com/Manga/Fate-Kaleid-Liner-Prisma-Illya-Drei' 
     mangatraders_series_url = 'http://mangatraders.org/manga/?series=FateKaleidLinerPrismaIllyaDrei&uploader=Ravmunken' 
     
     def select_url_bad_test(self):
@@ -42,14 +40,6 @@ class DownloadControllerTest(unittest.TestCase):
         
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, BatotoModel) )
-    
-    @attr(site='kissmanga')
-    def select_url_kissmanga_test(self):
-        dc = DownloadController()
-        r = dc.setSeriesUrl(self.kissmanga_series_url)
-        
-        self.assertTrue(r)
-        self.assertTrue( isinstance(dc.webpage_model, KissmangaModel) )
     
     @attr(site='mangatraders')
     def select_url_mangatraders_test(self):

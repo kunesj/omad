@@ -65,14 +65,17 @@ build: clean
 clean:
 	sudo rm -rf build dist
 
-test:
-	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad
+tests:
+	nosetests --verbose --logging-level=INFO 
+
+tests_with_coverage:
+	nosetests --verbose --logging-level=INFO --with-coverage --cover-erase --cover-inclusive --cover-package=omad
 
 test_mangafox:
-	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangafox'
+	nosetests --verbose --logging-level=INFO -a site='mangafox'
 
 test_batoto:
-	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='batoto'
+	nosetests --verbose --logging-level=INFO -a site='batoto'
 
 test_mangatraders:
-	nosetests --with-coverage --verbose --logging-level=INFO --cover-package=omad -a site='mangatraders'
+	nosetests --verbose --logging-level=INFO -a site='mangatraders'

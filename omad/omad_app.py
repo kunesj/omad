@@ -89,9 +89,10 @@ def nogui(args):
     for i, r in enumerate(dc.results):
         if r is False:
             print chapter_list[i+args.range[0]][0]
+    
+    sys.exit(0)
 
-
-def main():      
+def main():
     parser = argparse.ArgumentParser(
         description='OMAD (Online MAnga downloader)'
     )

@@ -24,7 +24,7 @@ class ModelsTest(unittest.TestCase):
     mangatraders_chapter_index = 0 #
 
 
-    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr(site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
     def mangafox_test(self):
         dc = DownloadController()
 
@@ -38,7 +38,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
 
-    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr(site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
     def mangafox_test_bad_url(self):
         dc = DownloadController()
 

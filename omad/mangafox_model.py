@@ -80,7 +80,7 @@ class MangafoxModel(SiteModel):
         r = self.requests.get(url=cut_gallery_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        print html
+        print html, r.request.headers
 
         # parse html
         ch_name = chapter[0]

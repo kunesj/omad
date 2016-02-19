@@ -74,13 +74,13 @@ class MangafoxModel(SiteModel):
 
         # get url
         full_gallery_url = chapter[1]
-        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
+        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'+'1.html'
 
         # download html
         r = self.requests.get(url=cut_gallery_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        print html, r.request.headers
+        print html, r.request.headers, full_gallery_url, cut_gallery_url
 
         # parse html
         ch_name = chapter[0]

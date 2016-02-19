@@ -81,6 +81,7 @@ class MangafoxModel(SiteModel):
         r = requests.get(cut_gallery_url, timeout=30)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
+        print html
 
         # parse html
         ch_name = chapter[0]

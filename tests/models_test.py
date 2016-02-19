@@ -12,10 +12,11 @@ from omad.mangatraders_model import MangatradersModel
 
 class ModelsTest(unittest.TestCase):
     # if error, always first check if urls are not bad
-    # testchapters must have special non-ASCII characters in their names
-    #
-    mangafox_series_url = 'http://mangafox.me/manga/ai_yori_aoshi/' # has special char in chapter name
-    mangafox_chapter_index = 29 # http://mangafox.me/manga/ai_yori_aoshi/v04/c030/1.html
+    # testchapters should have special non-ASCII characters in their names
+    
+    # mangafox shows all manga as licensed when viewed from USA
+    mangafox_series_url = 'http://mangafox.me/manga/0_0_mhz/' # needs to be korean/chinese comix to work on Travis
+    mangafox_chapter_index = 0
 
     batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635' # special char in series name
     batoto_chapter_index = 0 # http://bato.to/read/_/145348/fatekaleid-liner-prisma%E2%98%86illya-3rei_ch1_by_suimasen-scans
@@ -24,7 +25,7 @@ class ModelsTest(unittest.TestCase):
     mangatraders_chapter_index = 0 #
 
 
-    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr(site='mangafox')
     def mangafox_test(self):
         dc = DownloadController()
 
@@ -38,7 +39,7 @@ class ModelsTest(unittest.TestCase):
         # test if download was sucessfull
         self.assertTrue(r)
 
-    @attr('travisFail', site='mangafox') # Mangafox requests fail (wrong output) at travis for an unknown reason
+    @attr(site='mangafox')
     def mangafox_test_bad_url(self):
         dc = DownloadController()
 

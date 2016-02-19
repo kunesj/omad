@@ -23,7 +23,6 @@ import traceback
 
 from sitemodel import SiteModel
 
-import requests
 import urlparse
 try:
     from BeautifulSoup import BeautifulSoup
@@ -65,7 +64,7 @@ class MangatradersModel(SiteModel):
         Returns:
             [[chapter_name, url], [chapter_name, url], ...]
         """
-        r = requests.get(self.series_url, timeout=30)
+        r = self.requests.get(url=self.series_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
@@ -102,7 +101,7 @@ class MangatradersModel(SiteModel):
         cut_gallery_url = full_gallery_url.split('/page-')[0]
 
         # download html
-        r = requests.get(full_gallery_url, timeout=30)
+        r = self.requests.get(url=full_gallery_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
@@ -135,7 +134,7 @@ class MangatradersModel(SiteModel):
         Returns:
             [image_url, image_extension]
         """
-        r = requests.get(page_url, timeout=30)
+        r = self.requests.get(url=page_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 

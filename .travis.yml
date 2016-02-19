@@ -16,7 +16,7 @@ before_install:
     - pip install requests[security]
     
 # command to run tests
-script: nosetests --verbose --logging-level=INFO --with-coverage --cover-inclusive --cover-package=omad -a '!travisFail'
+script: nosetests --verbose --logging-level=INFO --with-coverage --cover-inclusive --cover-package=omad
 
 after_success:
     - coveralls

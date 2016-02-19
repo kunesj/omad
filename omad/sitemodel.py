@@ -24,9 +24,16 @@ import traceback
 import sys
 
 from archive_controller import ArchiveController
+from fixed_requests import FixedRequests
 
 class SiteModel(object):
     def __init__(self, series_url, gui_info_fcn):
+        # init variables
+        self.guiInfoFcn = None
+        self.series_url = None
+        self.requests = FixedRequests()
+        
+        # set variables
         self.setGuiInfoFcn(gui_info_fcn)
         self.setSeriesUrl(series_url)
 
@@ -102,6 +109,7 @@ class SiteModel(object):
 
         # create temp folder for downloads
         ac = ArchiveController(download_path)
+        ac.set_requests_object(self.requests)
         ac.mkdir()
 
         for i in range(gallery_size):

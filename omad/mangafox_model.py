@@ -23,7 +23,6 @@ import traceback
 
 from sitemodel import SiteModel
 
-import requests
 try:
     from BeautifulSoup import BeautifulSoup
 except:
@@ -39,7 +38,7 @@ class MangafoxModel(SiteModel):
         Returns:
             [[chapter_name, url], [chapter_name, url], ...]
         """
-        r = requests.get(self.series_url, timeout=30)
+        r = self.requests.get(url=self.series_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
@@ -78,7 +77,7 @@ class MangafoxModel(SiteModel):
         cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
 
         # download html
-        r = requests.get(cut_gallery_url, timeout=30)
+        r = self.requests.get(url=cut_gallery_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
         print html
@@ -108,7 +107,7 @@ class MangafoxModel(SiteModel):
         Returns:
             [image_url, image_extension]
         """
-        r = requests.get(page_url, timeout=30)
+        r = self.requests.get(url=page_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 

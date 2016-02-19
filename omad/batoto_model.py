@@ -23,26 +23,23 @@ import traceback
 
 from sitemodel import SiteModel
 
-import requests
 try:
     from BeautifulSoup import BeautifulSoup
 except:
     # windows fix
     from bs4 import BeautifulSoup
 
-DEFAULT_HEADERS = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:42.0) Gecko/20100101 Firefox/42.0',
-                    'referer': 'https://bato.to/reader'}
-
 class BatotoModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
         super(BatotoModel, self).__init__(series_url, gui_info_fcn)
+        self.requests.updateHeaders({'referer': 'https://bato.to/reader'})
 
     def getChaptersList(self):
         """
         Returns:
             [[chapter_name, url], [chapter_name, url], ...]
         """
-        r = requests.get(self.series_url, timeout=30)
+        r = self.requests.get(url=self.series_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
@@ -79,7 +76,7 @@ class BatotoModel(SiteModel):
         reader_page_url = "https://bato.to/areader?id="+gallery_id+"&p=1&supress_webtoon=t"
 
         # get html
-        r = requests.get(reader_page_url, timeout=30, headers=DEFAULT_HEADERS)
+        r = self.requests.get(url=reader_page_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 
@@ -115,7 +112,7 @@ class BatotoModel(SiteModel):
         Returns:
             [image_url, image_extension]
         """
-        r = requests.get(page_url, timeout=30, headers=DEFAULT_HEADERS)
+        r = self.requests.get(url=page_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
 

@@ -27,12 +27,17 @@ import shutil
 from random import randint
 import zipfile
 
-import requests
+from fixed_requests import FixedRequests
 
 class ArchiveController():
     def __init__(self, downloadPath='./'):
         self.path = None
         self.downloadPath = downloadPath
+        
+        self.set_requests_object( FixedRequests() )
+    
+    def set_requests_object(self, rObj):
+        self.requests = rObj
 
     def mkdir(self):
         self.path = tempfile.mkdtemp()
@@ -73,10 +78,7 @@ class ArchiveController():
         return filename
 
     def download(self, url, filename):
-        response = requests.get(url, timeout=30)
-        if response.status_code == 503:
-            raise Exception("503 Service Unavailable")
-
+        response = self.requests.get(url=url)
         with open(os.path.join(self.path, filename),'wb') as f:
             f.write(response.content)
 

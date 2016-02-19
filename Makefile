@@ -65,10 +65,10 @@ build: clean
 clean:
 	sudo rm -rf build dist
 
-tests:
+test_all:
 	nosetests --verbose --logging-level=INFO 
 
-tests_with_coverage:
+test_all_coverage:
 	nosetests --verbose --logging-level=INFO --with-coverage --cover-erase --cover-inclusive --cover-package=omad
 
 test_mangafox:

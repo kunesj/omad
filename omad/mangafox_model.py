@@ -74,13 +74,19 @@ class MangafoxModel(SiteModel):
 
         # get url
         full_gallery_url = chapter[1]
-        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'+'1.html'
+        cut_gallery_url = '/'.join(chapter[1].split('/')[:-1])+'/'
 
         # download html
         r = self.requests.get(url=cut_gallery_url)
         html = unicode(r.text)
         soup = BeautifulSoup(html)
-        print html, r.request.headers, full_gallery_url, cut_gallery_url
+        
+        # test if series is licensed and not availible from current country
+        top_bar = soup.body.find('form', attrs={'id':'top_bar'})
+        span = top_bar.find('span')
+        if span is not None:
+            if "licensed" in span.text.strip():
+                raise Exception("Series is licensed and not available in your country")
 
         # parse html
         ch_name = chapter[0]

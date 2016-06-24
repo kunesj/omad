@@ -1,22 +1,21 @@
 sudo: false
 language: python
 python:
-  - "2.7"
+  - "3"
 virtualenv:
     system_site_packages: true
 addons:
   apt:
     packages:
-    - python 
-    - python-pip
-    - python-qt4
+    - python3
+    - python3-pip
+    - python3-pyqt4
 before_install:
-    - pip install requests beautifulsoup
-    - pip install coverage python-coveralls
-    - pip install requests[security]
-    
+    - pip3 install requests beautifulsoup4
+    - pip3 install coverage python-coveralls
+
 # command to run tests
-script: nosetests --verbose --logging-level=INFO --with-coverage --cover-inclusive --cover-package=omad
+script: PYTHONPATH=. nosetests3 -v --logging-level=INFO --with-coverage --cover-erase --cover-inclusive --cover-package=omad
 
 after_success:
     - coveralls

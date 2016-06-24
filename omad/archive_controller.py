@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -27,15 +27,15 @@ import shutil
 from random import randint
 import zipfile
 
-from fixed_requests import FixedRequests
+from omad.fixed_requests import FixedRequests
 
 class ArchiveController():
     def __init__(self, downloadPath='./'):
         self.path = None
         self.downloadPath = downloadPath
-        
+
         self.set_requests_object( FixedRequests() )
-    
+
     def set_requests_object(self, rObj):
         self.requests = rObj
 
@@ -81,5 +81,3 @@ class ArchiveController():
         response = self.requests.get(url=url)
         with open(os.path.join(self.path, filename),'wb') as f:
             f.write(response.content)
-
-

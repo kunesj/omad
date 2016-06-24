@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 
 import unittest
 from nose.plugins.attrib import attr
@@ -13,7 +13,7 @@ from omad.mangatraders_model import MangatradersModel
 class ModelsTest(unittest.TestCase):
     # if error, always first check if urls are not bad
     # testchapters should have special non-ASCII characters in their names
-    
+
     # mangafox shows all manga as licensed when viewed from USA
     mangafox_series_url = 'http://mangafox.me/manga/0_0_mhz/' # needs to be korean/chinese comix to work on Travis
     mangafox_chapter_index = 0

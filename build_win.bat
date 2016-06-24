@@ -1,6 +1,6 @@
-python -c "import omad; print omad.__version__" > tmpFile 
-set /p VERSION= < tmpFile 
-del tmpFile 
+python3 -c "import omad; print omad.__version__" > tmpFile
+set /p VERSION= < tmpFile
+del tmpFile
 echo VERSION=%VERSION%
 
 RMDIR /S /Q build
@@ -16,4 +16,4 @@ RMDIR /S /Q .\dist\omad_cli
 copy .\README.* .\dist\
 copy .\LICENSE.* .\dist\
 git archive --format zip --output .\dist\omad_%VERSION%_source.zip master
-python build_win_compress.py %VERSION% %PROCESSOR_ARCHITECTURE%
+python3 build_win_compress.py %VERSION% %PROCESSOR_ARCHITECTURE%

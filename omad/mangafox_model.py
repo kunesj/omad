@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -21,13 +21,9 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
-from sitemodel import SiteModel
+from omad.sitemodel import SiteModel
 
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    # windows fix
-    from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class MangafoxModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
@@ -39,8 +35,7 @@ class MangafoxModel(SiteModel):
             [[chapter_name, url], [chapter_name, url], ...]
         """
         r = self.requests.get(url=self.series_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         div_ch = soup.body.find('div', attrs={'id':'chapters'})
         blocks = div_ch.findAll('ul', attrs={'class':'chlist'})
@@ -54,7 +49,6 @@ class MangafoxModel(SiteModel):
         processed_chapters = []
         for ch in chs:
             name = ch.text.replace('\n', ' ').strip()
-            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = ch.find('a').get('href')
             processed_chapters.append([name, href])
 
@@ -78,9 +72,8 @@ class MangafoxModel(SiteModel):
 
         # download html
         r = self.requests.get(url=cut_gallery_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
-        
+        soup = BeautifulSoup(r.text, 'lxml')
+
         # test if series is licensed and not availible from current country
         top_bar = soup.body.find('form', attrs={'id':'top_bar'})
         span = top_bar.find('span')
@@ -114,8 +107,7 @@ class MangafoxModel(SiteModel):
             [image_url, image_extension]
         """
         r = self.requests.get(url=page_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         img_url = soup.body.find('img', attrs={'id':'image'}).get('src')
         img_ext = img_url.split('.')[-1].split('?')[0]

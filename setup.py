@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 from setuptools import setup
@@ -26,6 +26,6 @@ setup(name='omad',
           'setuptools',
           'beautifulsoup',
           'requests'
-          # python-qt4 
+          # python-qt4
         ],
     )

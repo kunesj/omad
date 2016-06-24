@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -23,8 +23,8 @@ import traceback
 
 import sys
 
-from archive_controller import ArchiveController
-from fixed_requests import FixedRequests
+from omad.archive_controller import ArchiveController
+from omad.fixed_requests import FixedRequests
 
 class SiteModel(object):
     def __init__(self, series_url, gui_info_fcn):
@@ -32,7 +32,7 @@ class SiteModel(object):
         self.guiInfoFcn = None
         self.series_url = None
         self.requests = FixedRequests()
-        
+
         # set variables
         self.setGuiInfoFcn(gui_info_fcn)
         self.setSeriesUrl(series_url)
@@ -91,7 +91,7 @@ class SiteModel(object):
         # get gallery info and url to every page
         try:
             gallery_info = self.getGalleryInfo(chapter)
-        except Exception, e:
+        except Exception as e:
             logger.debug('Failed to get gallery info for chapter: '+str(chapter))
             exc_type, exc_value, exc_traceback = sys.exc_info()
             trace = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -127,7 +127,7 @@ class SiteModel(object):
             # download image to temp folder
             try:
                 ac.download(img_url, img_filename)
-            except Exception, e:
+            except Exception as e:
                 logger.exception('BAD download for: '+img_url)
                 self.guiInfoFcn("Error downloading page image")
                 return False

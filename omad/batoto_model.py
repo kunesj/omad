@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -21,13 +21,9 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
-from sitemodel import SiteModel
+from omad.sitemodel import SiteModel
 
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    # windows fix
-    from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class BatotoModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
@@ -40,8 +36,7 @@ class BatotoModel(SiteModel):
             [[chapter_name, url], [chapter_name, url], ...]
         """
         r = self.requests.get(url=self.series_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         table_ch = soup.body.find('table', attrs={'class':'ipb_table chapters_list'})
         en_chs = table_ch.findAll('tr', attrs={'class':'row lang_English chapter_row'})
@@ -50,7 +45,6 @@ class BatotoModel(SiteModel):
         for ch in en_chs:
             tds = ch.findAll('td')
             name = tds[0].text.strip()
-            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = tds[0].find('a').get('href')
             processed_chapters.append([name, href])
 
@@ -77,19 +71,16 @@ class BatotoModel(SiteModel):
 
         # get html
         r = self.requests.get(url=reader_page_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         # parse html
         div_modbar = soup.find('div', attrs={'class':'moderation_bar rounded clear'})
         series_name = div_modbar.find('a').text.replace('/',' ')
         ch_select = div_modbar.find('select', attrs={'name':'chapter_select'})
-        ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text
-        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+        ch_name = series_name+' - '+ch_select.find('option', attrs={'selected':'selected'}).text.strip()
 
         grp_select = div_modbar.find('select', attrs={'name':'group_select'})
         grp_name = grp_select.find('option', attrs={'selected':'selected'}).text
-        grp_name = BeautifulSoup(grp_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         # remove language from group
         grp_name = '-'.join(grp_name.split('-')[:-1]).strip()
 
@@ -113,8 +104,7 @@ class BatotoModel(SiteModel):
             [image_url, image_extension]
         """
         r = self.requests.get(url=page_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         img_url = soup.find('img', attrs={'id':'comic_page'}).get('src')
         img_ext = img_url.split('.')[-1]

@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -17,5 +17,5 @@ You should have received a copy of the GNU General Public License
 along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from omad_app import main
+from omad.omad_app import main
 main()

@@ -1,12 +1,15 @@
 
-APTGET_RUN_DEP=python python-pip python-qt4
-PIP_RUN_DEP=requests beautifulsoup
+APTGET_RUN_DEP=python3 python3-pip python3-pyqt4
+PIP_RUN_DEP=requests beautifulsoup4
 
 APTGET_BUILD_DEP=$(APTGET_RUN_DEP) python-qt4-dev
 PIP_BUILD_DEP=$(PIP_RUN_DEP) pyinstaller
 
+APTGET_TEST_DEP=python3-nose python3-coverage
+PIP_TEST_DEP=
+
 ARCH=$(shell arch)
-VERSION=$(shell python -c "import omad; print omad.__version__")
+VERSION=$(shell python3 -c "import omad; print omad.__version__")
 
 help:
 	@echo "Install everything: (Linux)\n\t make install"
@@ -17,65 +20,63 @@ help:
 	@echo "Build to static binary file: (Linux)\n\t make build"
 	@echo "Get build dependencies: (Linux-Debian)\n\t make build_dep"
 
-install: install_dep install_app
-	
-install_app: clean
-	sudo python setup.py build install
+all: clean install_dep install install_test_dep
+
+clean:
+	sudo rm -rf build dist
+
+install: clean
+	sudo python3 setup.py build install
 	sudo cp omad.desktop /usr/share/applications/omad.desktop
-	
-install_dep: 
+
+install_dep:
 	sudo apt-get install $(APTGET_RUN_DEP)
-	sudo pip install $(PIP_RUN_DEP)
-	
+	sudo pip3 install $(PIP_RUN_DEP)
+
+install_test_dep:
+	sudo apt-get install $(APTGET_TEST_DEP)
+	#sudo pip3 install $(PIP_TEST_DEP)
+
 uninstall:
-	sudo pip uninstall omad
+	sudo pip3 uninstall omad
 	sudo rm -f /usr/share/applications/omad.desktop
 	sudo rm -f /usr/local/bin/omad
 
-build_dep: 
+reinstall: uninstall install
+
+run:
+	PYTHONPATH=. python3 -m omad
+
+## For Building Portable Application
+####################################
+
+# PyInstaller requires version >= 2.2 OR dev
+# version 2.1 throws "import QtCore" error
+
+build_dep:
 	sudo apt-get install $(APTGET_BUILD_DEP)
-	sudo pip install $(PIP_BUILD_DEP)
-	
-	$(eval PYINST_VER=$(shell python -c "import PyInstaller; v=PyInstaller.VERSION; print str(v[0])+str(v[1])") )
-	$(eval PYINST_VER_DEV=$(shell python -c "import PyInstaller; v=PyInstaller.VERSION; print int('dev' in str(v))") )
-	@echo "PyInstaller version: $(PYINST_VER), dev: $(PYINST_VER_DEV)"
-	
-	# PyInstaller requires version >= 2.2 OR dev
-	# version 2.1 throws "import QtCore" error
-	@if [ $(PYINST_VER_DEV) -ne 1 ] ; then \
-		if [ ${PYINST_VER} -lt 22 ] ; then \
-			echo "PyInstaller version is too low, installing development version from github";\
-			make build_get_pyinstaller;\
-		fi ;\
-	fi
-	
-build_get_pyinstaller:
-	sudo apt-get install git build-essential
-	sudo rm -rf pyinstaller
-	git clone https://github.com/pyinstaller/pyinstaller pyinstaller
-	cd pyinstaller/bootloader ; python ./waf configure build install --no-lsb
-	cd pyinstaller; sudo python setup.py build install
+	sudo pip3 install $(PIP_BUILD_DEP)
 
 build: clean
 	pyinstaller -D -n omad omad/__main__.py
 	cp README* dist/ ; cp LICENSE* dist/ ; cp omad.desktop dist/
 	git archive --format tar --output ./dist/omad_$(VERSION)_source.tar master
 	cd dist; tar -zcvf ../omad_$(VERSION)_Linux_$(ARCH).tar.gz *
-	
-clean:
-	sudo rm -rf build dist
+
+## For Development Only
+#######################
 
 test_all:
-	nosetests --verbose --logging-level=INFO 
+	PYTHONPATH=. nosetests3 -v --logging-level=INFO
 
 test_all_coverage:
-	nosetests --verbose --logging-level=INFO --with-coverage --cover-erase --cover-inclusive --cover-package=omad
+	PYTHONPATH=. nosetests3 -v --logging-level=INFO --with-coverage --cover-erase --cover-inclusive --cover-package=omad
 
 test_mangafox:
-	nosetests --verbose --logging-level=INFO -a site='mangafox'
+	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='mangafox'
 
 test_batoto:
-	nosetests --verbose --logging-level=INFO -a site='batoto'
+	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='batoto'
 
 test_mangatraders:
-	nosetests --verbose --logging-level=INFO -a site='mangatraders'
+	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='mangatraders'

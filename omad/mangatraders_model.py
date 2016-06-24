@@ -1,5 +1,5 @@
-#!/usr/bin/python2
-# coding: utf-8
+#!/usr/bin/env python3
+# encoding: utf-8
 """
 This file is part of OMAD.
 
@@ -21,14 +21,10 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
-from sitemodel import SiteModel
+from omad.sitemodel import SiteModel
 
-import urlparse
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    # windows fix
-    from bs4 import BeautifulSoup
+import urllib.parse as urlparse
+from bs4 import BeautifulSoup
 
 class MangatradersModel(SiteModel):
     """
@@ -44,8 +40,8 @@ class MangatradersModel(SiteModel):
 
         mod = MangatradersModel('http://mangatraders.org/manga/?series=CromartieHighSchool&uploader=LeturLefr', dc.guiInfoFcn)
         chapters = mod.getChaptersList()
-        print chapters[0]
-        print mod.downloadChapter(chapters[0], './')
+        print(chapters[0])
+        print(mod.downloadChapter(chapters[0], './'))
     """
 
     def __init__(self, series_url, gui_info_fcn):
@@ -65,8 +61,7 @@ class MangatradersModel(SiteModel):
             [[chapter_name, url], [chapter_name, url], ...]
         """
         r = self.requests.get(url=self.series_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         rows = soup.body \
                 .find('div', attrs={'class':'container mainContainer'}) \
@@ -77,7 +72,6 @@ class MangatradersModel(SiteModel):
         for r in rows:
             a = r.find('a')
             name = a.text.strip()
-            name = BeautifulSoup(name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
             href = a.get('href')
             if not 'mangatraders.org' in href:
                 href = 'http://mangatraders.org'+href
@@ -102,19 +96,16 @@ class MangatradersModel(SiteModel):
 
         # download html
         r = self.requests.get(url=full_gallery_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         # parse html
         mainPageContainer = soup.body.find('div', attrs={'class':'container mainPageContainer'})
 
         series_name = mainPageContainer.find('ol').find('li').find('a') \
             .text.strip()
-        series_name = BeautifulSoup(series_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
         ch_name = series_name+' - '+mainPageContainer.find('ol') \
             .find('select', attrs={'id':'changeChapterSelect'}) \
-            .find('option', attrs={'selected':'selected'}).text.strip()
-        ch_name = BeautifulSoup(ch_name, convertEntities=BeautifulSoup.HTML_ENTITIES).text
+            .find('option', attrs={'selected':''}).text.strip()
         grp_name = ''
 
         # get page_urls
@@ -135,8 +126,7 @@ class MangatradersModel(SiteModel):
             [image_url, image_extension]
         """
         r = self.requests.get(url=page_url)
-        html = unicode(r.text)
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(r.text, 'lxml')
 
         img_url = soup.body \
             .find('div', attrs={'style':'text-align:center;'}) \

@@ -1,4 +1,4 @@
-python3 -c "import omad; print omad.__version__" > tmpFile
+python3 -c "import omad; print(omad.__version__)" > tmpFile
 set /p VERSION= < tmpFile
 del tmpFile
 echo VERSION=%VERSION%

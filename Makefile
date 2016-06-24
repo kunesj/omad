@@ -9,7 +9,7 @@ APTGET_TEST_DEP=python3-nose python3-coverage
 PIP_TEST_DEP=
 
 ARCH=$(shell arch)
-VERSION=$(shell python3 -c "import omad; print omad.__version__")
+VERSION=$(shell python3 -c "import omad; print(omad.__version__)")
 
 help:
 	@echo "Install everything: (Linux)\n\t make install"

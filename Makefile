@@ -38,7 +38,7 @@ install_test_dep:
 	#sudo pip3 install $(PIP_TEST_DEP)
 
 uninstall:
-	sudo pip3 uninstall omad
+	sudo pip3 uninstall -y omad
 	sudo rm -f /usr/share/applications/omad.desktop
 	sudo rm -f /usr/local/bin/omad
 

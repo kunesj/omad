@@ -9,22 +9,27 @@ OMAD (Online MAnga Downloader) is a simple application for downloading chapters 
 
 Supported sites:
 ```
-    bato.to
-    mangafox.me
-    mangatraders.org
+bato.to
+mangafox.me
+mangatraders.org
 ```
 
 Optional commandline parameters:
 ```
-      -h, --help            show this help message and exit
-      -u URL, --url URL     Url of manga galllery
-      -r N [N ...], --range N [N ...]
-                            Range of chapters to download [0 -1]
-      --nogui               Disable GUI
-      -d, --debug           Debug mode
-      --logfile             Save log to file
-      -l, --list            List chapters and exit. Used for finding download
-                            range
+usage: omad [-h] [-u URL] [-r N [N ...]] [--nogui] [-d] [--logfile] [-l]
+
+OMAD (Online MAnga downloader)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -u URL, --url URL     Url of manga galllery
+  -r N [N ...], --range N [N ...]
+                        Range of chapters to download [0 -1]
+  --nogui               Disable GUI
+  -d, --debug           Debug mode
+  --logfile             Save log to file
+  -l, --list            List chapters and exit. Used for finding download
+                        range
 ```
 
 Install on Linux (Debian/Ubuntu/Mint)
@@ -65,7 +70,7 @@ You can download archived binary file from latest [release](https://github.com/k
     - Download [Python 3.x - PyQt4](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyqt4) wheels package
     - From commandline in folder with downloaded file run following command, you will need to modify it for correct filename:
 
-    pip3 install PyQt4-4.*.*-cp3*-none-win32.whl
+    pip3 install PyQt4-4.?.?-cp3?-none-win32.whl
 
 3. Install rest of runtime dependencies
     - From commandline run following command:

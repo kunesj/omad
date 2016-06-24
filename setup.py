@@ -24,8 +24,8 @@ setup(name='omad',
         },
         install_requires = [
           'setuptools',
-          'beautifulsoup',
+          'beautifulsoup4',
           'requests'
-          # python-qt4
+          # python3-qt4 > use apt-get
         ],
     )

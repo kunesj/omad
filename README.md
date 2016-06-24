@@ -1,7 +1,7 @@
 OMAD
 ====
 
-[![Build Status](https://travis-ci.org/kunesj/omad.svg?branch=master)](https://travis-ci.org/kunesj/omad) [![Code Climate](https://codeclimate.com/github/kunesj/omad/badges/gpa.svg)](https://codeclimate.com/github/kunesj/omad) [![Coverage Status](https://coveralls.io/repos/github/kunesj/omad/badge.svg?branch=master)](https://coveralls.io/github/kunesj/omad?branch=master) [![Join the chat at https://gitter.im/kunesj/omad](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kunesj/omad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/kunesj/omad.svg?branch=master)](https://travis-ci.org/kunesj/omad) [![Code Climate](https://codeclimate.com/github/kunesj/omad/badges/gpa.svg)](https://codeclimate.com/github/kunesj/omad) [![Coverage Status](https://coveralls.io/repos/github/kunesj/omad/badge.png?branch=master)](https://coveralls.io/github/kunesj/omad?branch=master) [![Join the chat at https://gitter.im/kunesj/omad](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kunesj/omad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 OMAD (Online MAnga Downloader) is a simple application for downloading chapters from online manga reading sites.
 

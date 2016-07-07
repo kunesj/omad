@@ -103,9 +103,8 @@ class MangatradersModel(SiteModel):
 
         series_name = mainPageContainer.find('ol').find('li').find('a') \
             .text.strip()
-        ch_name = series_name+' - '+mainPageContainer.find('ol') \
-            .find('select', attrs={'id':'changeChapterSelect'}) \
-            .find('option', attrs={'selected':''}).text.strip()
+        ch_number = full_gallery_url.split('chapter-')[-1].split('/index-')[0]
+        ch_name = series_name+' - Chapter '+ch_number
         grp_name = ''
 
         # get page_urls

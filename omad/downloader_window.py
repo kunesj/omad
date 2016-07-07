@@ -169,7 +169,7 @@ class DownloaderWindow(QMainWindow):
     def addInfo(self, s='Testing printing...', exception=False, downloadProgress=False, trace=[]):
         logger.info(s+', '+str(exception)+', '+str(downloadProgress)+', '+str(trace))
 
-        if not isinstance(s, basestring) and type(s) != type(QtCore.QString('')):
+        if type(s)!=type("") and type(s)!=type(b"") and type(s) != type(QtCore.QString('')):
             s = str(s)
 
         if exception:
@@ -289,7 +289,6 @@ class DownloaderWindow(QMainWindow):
 
         if len(downdir) > 0:
             downdir = "%s" % (downdir)
-            downdir = downdir.encode("utf8")
         else:
             downdir = directory
 

@@ -20,7 +20,7 @@ along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 logger = logging.getLogger(__name__)
 import traceback
-import os
+import os, sys
 
 from omad.batoto_model import BatotoModel
 from omad.mangafox_model import MangafoxModel

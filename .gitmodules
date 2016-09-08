@@ -1,0 +1,3 @@
+[submodule "omad/misctools"]
+	path = omad/misctools
+	url = https://github.com/kunesj/PythonMiscTools.git

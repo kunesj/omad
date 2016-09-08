@@ -24,7 +24,7 @@ import traceback
 import sys
 
 from omad.archive_controller import ArchiveController
-from omad.fixed_requests import FixedRequests
+from omad.misctools.fixed_requests import FixedRequests
 
 class SiteModel(object):
     def __init__(self, series_url, gui_info_fcn):

@@ -27,7 +27,7 @@ import shutil
 from random import randint
 import zipfile
 
-from omad.fixed_requests import FixedRequests
+from omad.misctools.fixed_requests import FixedRequests
 
 class ArchiveController():
     def __init__(self, downloadPath='./'):

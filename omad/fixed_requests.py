@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
 # encoding: utf-8
-"""
-This file is part of OMAD.
-
-OMAD is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-any later version.
-
-OMAD is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
-"""
 
 import logging
 logger = logging.getLogger(__name__)
@@ -24,12 +8,12 @@ import traceback
 import sys, os, time
 import requests
 
-
 class FixedRequests(object):
     DEFAULT_HEADERS = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:44.0) Gecko/20100101 Firefox/44.0'}
 
     def __init__(self, use_cookies=True, max_errors=5):
         self.max_errors = max_errors
+        self.error_sleep_time = 1
 
         # cookies
         self.use_cookies = use_cookies
@@ -38,6 +22,10 @@ class FixedRequests(object):
         # requests arguments
         self.args_timeout = 30
         self.args_headers = dict(self.DEFAULT_HEADERS)
+
+        # request delay
+        self.request_delay = 0 # min time delay between requests
+        self.last_request_time = 0
 
     ###
     # Getters, Setters, Updaters
@@ -67,13 +55,39 @@ class FixedRequests(object):
     def setTimeout(self, new_timeout):
         self.args_timeout = new_timeout
 
+    def setRequestDelay(self, delay):
+        self.request_delay = delay
+
     ###
     # Methods from requests library
     ###
 
     def get(self, **kwargs):
         """ Only accepts keyword arguments """
+        kwargs["req_type"] = "get"
+        return self._request(**kwargs)
+
+    def post(self, **kwargs):
+        """ Only accepts keyword arguments """
+        kwargs["req_type"] = "post"
+        return self._request(**kwargs)
+
+    ###
+    # Private methods
+    ###
+
+    def _request(self, **kwargs):
+        """
+        * Generic request function
+        * Only accepts keyword arguments
+        * Needs to have "req_type": "get"/"post"
+        """
         kwargs = self._fillKWARGS(**kwargs)
+
+        if "req_type" not in kwargs:
+            kwargs["req_type"] = "get"
+        req_type = kwargs["req_type"]
+        del(kwargs["req_type"])
 
         error_num = 0
         while True:
@@ -82,18 +96,24 @@ class FixedRequests(object):
 
             response_ok = True
             try:
-                r = requests.get(**kwargs)
+                self._delayRequests()
+                if req_type == "get":
+                    r = requests.get(**kwargs)
+                elif req_type == "post":
+                    r = requests.post(**kwargs)
+                else:
+                    raise Exception("Unknown request type!")
+                if not self._testStatusCode(r.status_code):
+                    response_ok = False
             except requests.exceptions.ConnectionError:
                 logger.warning("Connection refused")
-                response_ok = False
-            if not self._testStatusCode(r.status_code):
                 response_ok = False
 
             if response_ok:
                 break
             else:
                 error_num += 1
-                time.sleep(error_num)
+                time.sleep(self.error_sleep_time)
                 continue
 
         # update cookies
@@ -102,9 +122,14 @@ class FixedRequests(object):
 
         return r
 
-    ###
-    # Private methods
-    ###
+    def _delayRequests(self):
+        """ makes sure that self.request_delay is obeyed """
+        if self.request_delay == 0:
+            return
+
+        deltat = time.time() - self.last_request_time
+        if deltat < self.request_delay:
+            time.sleep(float(self.request_delay)-deltat)
 
     def _fillKWARGS(self, **kwargs):
         if "timeout" not in kwargs:

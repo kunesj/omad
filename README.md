@@ -87,6 +87,14 @@ You can download archived binary file from latest [release](https://github.com/k
 
     - You can now start OMAD from commandline with "omad" command, optionally you can also create shortcut with this command
 
+Installing/Running from Source 
+-------
+When installing or running from downloaded source, do not forget to run:
+```
+git submodule init
+git submodule update
+```
+to download submodules
 
 Building static binary
 -------

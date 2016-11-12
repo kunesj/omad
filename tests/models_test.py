@@ -21,7 +21,7 @@ class ModelsTest(unittest.TestCase):
     batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635' # special char in series name
     batoto_chapter_index = 0 # http://bato.to/read/_/145348/fatekaleid-liner-prisma%E2%98%86illya-3rei_ch1_by_suimasen-scans
 
-    mangatraders_series_url = 'http://mangatraders.org/manga/?series=FateKaleidLinerPrismaIllyaDrei&uploader=Ravmunken' # slash in series name
+    mangatraders_series_url = 'http://mangatraders.biz/series/FateKaleidLinerPrismaIllyaDrei' # slash in series name
     mangatraders_chapter_index = 0 #
 
 

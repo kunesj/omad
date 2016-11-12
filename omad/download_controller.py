@@ -71,29 +71,36 @@ class DownloadController():
     def setSeriesUrl(self, url):
         logger.debug('Set series url: '+url)
 
-        if ("bato.to" in url) or ("batoto.com" in url):
-            self.webpage_model = BatotoModel(url, self.guiInfoFcn)
-            self.guiInfoFcn('Detected batoto url')
-        elif "mangafox.me" in url:
-            self.webpage_model = MangafoxModel(url, self.guiInfoFcn)
-            self.guiInfoFcn('Detected mangafox.me url')
-        elif "mangatraders.org" in url:
-            self.webpage_model = MangatradersModel(url, self.guiInfoFcn)
-            self.guiInfoFcn('Detected mangatraders.org url')
-        else:
+        try:
+            if ("bato.to" in url) or ("batoto.com" in url):
+                self.guiInfoFcn('Detected batoto url')
+                self.webpage_model = BatotoModel(url, self.guiInfoFcn)
+            elif "mangafox.me" in url:
+                self.guiInfoFcn('Detected mangafox.me url')
+                self.webpage_model = MangafoxModel(url, self.guiInfoFcn)
+            elif "mangatraders.biz" in url:
+                self.guiInfoFcn('Detected mangatraders.biz url')
+                self.webpage_model = MangatradersModel(url, self.guiInfoFcn)
+            else:
+                logger.debug('Unsupported url!')
+                self.guiInfoFcn('Unsupported url!')
+                self.webpage_model = None
+                self.chapters = []
+                return False
+        except Exception as e:
+            logger.exception(e)
+            self.guiInfoFcn('Error when setting series url!', exception=True)
             self.webpage_model = None
             self.chapters = []
-            logger.debug('Unsupported url!')
-            self.guiInfoFcn('Unsupported url!')
             return False
 
         try:
             self.chapters = self.webpage_model.getChaptersList()
         except Exception as e:
-            self.webpage_model = None
-            self.chapters = []
             logger.exception(e)
             self.guiInfoFcn('Error when downloading list of chapters! wrong url?', exception=True)
+            self.webpage_model = None
+            self.chapters = []
             return False
 
         return True

@@ -16,7 +16,7 @@ class DownloadControllerTest(unittest.TestCase):
     # allways test urls first
     mangafox_series_url = 'http://mangafox.me/manga/ai_yori_aoshi/'
     batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635'
-    mangatraders_series_url = 'http://mangatraders.org/manga/?series=FateKaleidLinerPrismaIllyaDrei&uploader=Ravmunken'
+    mangatraders_series_url = 'http://mangatraders.biz/series/FateKaleidLinerPrismaIllyaDrei'
 
     def select_url_bad_test(self):
         dc = DownloadController()

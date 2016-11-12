@@ -12,7 +12,7 @@ class OMADAppTest(unittest.TestCase):
     """
     Can only test if return codes
     """
-    mangatraders_series_url = 'http://mangatraders.org/manga/?series=FateKaleidLinerPrismaIllyaDrei&uploader=Ravmunken' # slash in series name
+    mangatraders_series_url = 'http://mangatraders.biz/series/FateKaleidLinerPrismaIllyaDrei' # slash in series name
     mangatraders_chapter_index = 0 #
 
     def main_nogui_bad_args_test(self):

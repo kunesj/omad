@@ -5,7 +5,7 @@ OMAD
 
 OMAD (Online MAnga Downloader) is a simple application for downloading chapters from online manga reading sites.
 
-![ScreenShot](https://raw.github.com/kunesj/omad/master/doc/preview.png)
+![ScreenShot](https://github.com/kunesj/omad/raw/master/doc/preview.png)
 
 Supported sites:
 ```

@@ -100,6 +100,19 @@ class DownloaderWindow(QMainWindow):
         layout_url.addWidget(self.line_url, 1)
         layout_main.addLayout(layout_url)
 
+        ## Login edit
+        layout_login = QHBoxLayout()
+        layout_login.setSpacing(5)
+
+        self.line_username = QLineEdit()
+        self.line_password = QLineEdit()
+
+        layout_login.addWidget(QLabel('<b>Username:</b>'))
+        layout_login.addWidget(self.line_username, 1)
+        layout_login.addWidget(QLabel('<b>Password:</b>'))
+        layout_login.addWidget(self.line_password, 1)
+        layout_main.addLayout(layout_login)
+
         ## Comboboxes
         layout_combo = QHBoxLayout()
         layout_combo.setSpacing(5)
@@ -209,6 +222,17 @@ class DownloaderWindow(QMainWindow):
         if not self.down_control.setSeriesUrl(url):
             return # bad url
 
+        # get login data
+        login_username = str(self.line_username.text()).strip()
+        login_password = str(self.line_password.text()).strip()
+        if login_username!="" and login_password!="":
+            self.addInfo("Logging in as user '%s'..." % login_username)
+            if self.down_control.login(login_username, login_password):
+                self.addInfo("Sucessfuly logged in!")
+            else:
+                self.addInfo("Login failed! Continuing anyway.")
+
+        # get chapters list
         self.chapters = self.down_control.getChaptersList()
 
         logger.debug('Setting up comboBoxes...')

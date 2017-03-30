@@ -38,11 +38,19 @@ def nogui(args):
 
     dc = DownloadController()
 
-    print("Downloading gallery info for: %s" % (args.url, ))
-
+    print("Setting DownloadController url...")
     if not dc.setSeriesUrl(args.url):
         print("Wrong url! Exiting...")
         sys.exit(2)
+
+    if args.login is not None:
+        print("Logging in as '%s'" % args.login[0])
+        if dc.login(args.login[0], args.login[1]):
+            print("Sucessfuly logged in!")
+        else:
+            print("Login failed! Continuing anyway.")
+
+    print("Downloading gallery info for: %s" % (args.url, ))
     chapter_list = dc.getChaptersList()
 
     # -l --list option, print chapters and exit
@@ -98,6 +106,11 @@ def main():
         '-u', '--url',
         default=None,
         help='Url of manga galllery')
+    parser.add_argument(
+        '--login',
+        default=None,
+        type=str, metavar='STR', nargs=2,
+        help='tuple of "USERNAME PASSWORD" for logging in.')
     parser.add_argument(
         '-r', '--range',
         default=None,

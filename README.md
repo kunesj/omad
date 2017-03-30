@@ -14,6 +14,8 @@ mangafox.me
 mangatraders.org
 ```
 
+Some sites might require login information.
+
 Optional commandline parameters:
 ```
 usage: omad [-h] [-u URL] [-r N [N ...]] [--nogui] [-d] [--logfile] [-l]

@@ -105,6 +105,18 @@ class DownloadController():
 
         return True
 
+    def login(self, username, password):
+        """ Returns True if OK, False if failed. """
+        if self.webpage_model is None:
+            return False
+        return self.webpage_model.login(username, password)
+
+    def getLogin(self):
+        """ Returns True if user is logged in """
+        if self.webpage_model is None:
+            return False
+        return self.webpage_model.getLogin()
+
     def getChaptersList(self):
         return self.chapters
 

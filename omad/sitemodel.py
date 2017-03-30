@@ -43,6 +43,21 @@ class SiteModel(object):
     def setSeriesUrl(self, series_url):
         self.series_url = series_url
 
+    def login(self, username, password):
+        """
+        Should be reimplemented by child class (if login is required).
+
+        Returns True if OK, False if failed.
+        """
+        return self.getLogin()
+
+    def getLogin(self):
+        """
+        Should be reimplemented by child class (if login is required).
+        Returns True if user is logged in
+        """
+        return False
+
     def getChaptersList(self):
         """
         Needs to be reimplemented!

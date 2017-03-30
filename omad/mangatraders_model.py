@@ -57,6 +57,34 @@ class MangatradersModel(SiteModel):
         else:
             self.series_url = series_url
 
+    def login(self, username, password):
+        """ Returns True if OK, False if failed. """
+        r = self.requests.post(
+            url="http://mangatraders.biz/auth/process.login.php",
+            data = {'EmailAddress':username, 'Password':password}
+            )
+        # r.text == "ok"
+
+        return self.getLogin()
+
+    def getLogin(self):
+        """ Returns True if user is logged in """
+        r = self.requests.post(url="http://mangatraders.biz/settings/")
+        soup = BeautifulSoup(r.text, 'lxml')
+
+        try:
+            div_container = soup.find('div', attrs={'class':'container mainContainer'})
+            div_well = div_container.find('div', attrs={'class':'well mainWell'})
+            if div_well is None: return False
+            h2_text = div_well.find('h2').text.strip()
+            if h2_text == "Change Username":
+                return True
+        except:
+            logger.exception("Not logged in or getLogin() failed!")
+            return False
+
+        return False
+
     def getChaptersList(self):
         """
         Returns:

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 from bs4 import BeautifulSoup
 
-from omad.sitemodel import SiteModel
+from .sitemodel import SiteModel
 
 class MangatradersModel(SiteModel):
 
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
-    from download_controller import DownloadController
+    from .download_controller import DownloadController
     dc = DownloadController()
 
     mod = MangatradersModel("http://mangatraders.biz/series/MahouTsukaiNoYome", dc.guiInfoFcn)

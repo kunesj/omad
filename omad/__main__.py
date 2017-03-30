@@ -17,5 +17,5 @@ You should have received a copy of the GNU General Public License
 along with OMAD.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from omad.omad_app import main
+from .omad_app import main
 main()

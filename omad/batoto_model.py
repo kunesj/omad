@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
-from omad.sitemodel import SiteModel
+from .sitemodel import SiteModel
 
 from bs4 import BeautifulSoup
 
@@ -29,6 +29,42 @@ class BatotoModel(SiteModel):
     def __init__(self, series_url, gui_info_fcn):
         super(BatotoModel, self).__init__(series_url, gui_info_fcn)
         self.requests.updateHeaders({'referer': 'https://bato.to/reader'})
+
+    def login(self, username, password):
+        """ Returns True if OK, False if failed. """
+        login_data = {}
+
+        # get auth_key and other hidden variables
+        r = self.requests.get(url="https://bato.to/forums/index.php?app=core&module=global&section=login")
+        soup = BeautifulSoup(r.text, 'lxml')
+        login_form = soup.find("form", attrs={"id":"login"})
+        for hidden_input in login_form.findAll("input", attrs={"type":"hidden"}):
+            login_data[hidden_input.get("name")] = hidden_input.get("value")
+
+        # login
+        login_data['ips_username'] = username
+        login_data['ips_password'] = password
+        login_data['rememberMe'] = "1"
+        r = self.requests.post(
+            url="https://bato.to/forums/index.php?app=core&module=global&section=login&do=process",
+            data = login_data
+            )
+
+        # redirect
+        self.requests.get(url="https://bato.to/reader")
+
+        return self.getLogin()
+
+    def getLogin(self):
+        """ Returns True if user is logged in """
+        r = self.requests.post(url="https://bato.to/forums/index.php?app=core&module=usercp")
+        soup = BeautifulSoup(r.text, 'lxml')
+
+        h1_pagetitle = soup.find('h1', attrs={'class':'ipsType_pagetitle'})
+        if h1_pagetitle is None: return False
+        if h1_pagetitle.text.strip() == "My Settings": return True
+
+        return False
 
     def getChaptersList(self):
         """

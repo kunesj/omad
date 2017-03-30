@@ -24,8 +24,8 @@ import sys, os, argparse
 
 from PyQt4.QtGui import QApplication
 
-from omad.downloader_window import DownloaderWindow
-from omad.download_controller import DownloadController
+from .downloader_window import DownloaderWindow
+from .download_controller import DownloadController
 
 def nogui(args):
     #test if we have all needed args
@@ -39,16 +39,11 @@ def nogui(args):
     dc = DownloadController()
 
     print("Setting DownloadController url...")
-    if not dc.setSeriesUrl(args.url):
-        print("Wrong url! Exiting...")
-        sys.exit(2)
-
     if args.login is not None:
-        print("Logging in as '%s'" % args.login[0])
-        if dc.login(args.login[0], args.login[1]):
-            print("Sucessfuly logged in!")
-        else:
-            print("Login failed! Continuing anyway.")
+        r = dc.setSeriesUrl(args.url, args.login[0], args.login[1])
+    else:
+        r = dc.setSeriesUrl(args.url)
+    if not r: print("Wrong url! Exiting..."); sys.exit(2)
 
     print("Downloading gallery info for: %s" % (args.url, ))
     chapter_list = dc.getChaptersList()

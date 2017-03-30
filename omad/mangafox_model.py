@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger(__name__)
 import traceback
 
-from omad.sitemodel import SiteModel
+from .sitemodel import SiteModel
 
 from bs4 import BeautifulSoup
 

@@ -29,7 +29,7 @@ from PyQt4.QtGui import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,\
                         QTextEdit, QLineEdit, QLabel, QComboBox, QPushButton, \
                         QFileDialog
 
-from omad.download_controller import DownloadController
+from .download_controller import DownloadController
 
 class DownloadWorker(QRunnable):
     class DownloadWorkerSignals(QObject):
@@ -218,19 +218,15 @@ class DownloaderWindow(QMainWindow):
 
         # get series url
         url = str(self.line_url.text()).strip()
-
-        if not self.down_control.setSeriesUrl(url):
-            return # bad url
-
         # get login data
         login_username = str(self.line_username.text()).strip()
         login_password = str(self.line_password.text()).strip()
+
         if login_username!="" and login_password!="":
-            self.addInfo("Logging in as user '%s'..." % login_username)
-            if self.down_control.login(login_username, login_password):
-                self.addInfo("Sucessfuly logged in!")
-            else:
-                self.addInfo("Login failed! Continuing anyway.")
+            r = self.down_control.setSeriesUrl(url, login_username, login_password)
+        else:
+            r = self.down_control.setSeriesUrl(url)
+        if not r: return # bad url
 
         # get chapters list
         self.chapters = self.down_control.getChaptersList()

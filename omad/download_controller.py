@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 import traceback
 import os, sys
 
-from omad.batoto_model import BatotoModel
-from omad.mangafox_model import MangafoxModel
-from omad.mangatraders_model import MangatradersModel
+from .batoto_model import BatotoModel
+from .mangafox_model import MangafoxModel
+from .mangatraders_model import MangatradersModel
 
 class DownloadController():
     def __init__(self, gui_info_fcn=None):
@@ -68,7 +68,7 @@ class DownloadController():
     def getDownloadPath(self):
         return self.downloadPath
 
-    def setSeriesUrl(self, url):
+    def setSeriesUrl(self, url, username=None, password=None):
         logger.debug('Set series url: '+url)
 
         try:
@@ -93,6 +93,13 @@ class DownloadController():
             self.webpage_model = None
             self.chapters = []
             return False
+
+        if username is not None and password is not None:
+            self.guiInfoFcn("Logging in as '%s'" % username)
+            if self.login(username, password):
+                self.guiInfoFcn("Sucessfuly logged in!")
+            else:
+                self.guiInfoFcn("Login failed! Continuing anyway.")
 
         try:
             self.chapters = self.webpage_model.getChaptersList()

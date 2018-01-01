@@ -10,8 +10,7 @@ OMAD (Online MAnga Downloader) is a simple application for downloading chapters 
 Supported sites:
 ```
 bato.to
-mangafox.me
-mangatraders.org
+mangafox.me, mangafox.li
 ```
 
 Some sites might require login information.

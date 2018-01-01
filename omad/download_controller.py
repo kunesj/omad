@@ -24,7 +24,6 @@ import os, sys
 
 from .batoto_model import BatotoModel
 from .mangafox_model import MangafoxModel
-from .mangatraders_model import MangatradersModel
 
 class DownloadController():
     def __init__(self, gui_info_fcn=None):
@@ -75,12 +74,9 @@ class DownloadController():
             if ("bato.to" in url) or ("batoto.com" in url):
                 self.guiInfoFcn('Detected batoto url')
                 self.webpage_model = BatotoModel(url, self.guiInfoFcn)
-            elif "mangafox.me" in url:
-                self.guiInfoFcn('Detected mangafox.me url')
+            elif ("mangafox.me" in url) or ("mangafox.li" in url):
+                self.guiInfoFcn('Detected mangafox url')
                 self.webpage_model = MangafoxModel(url, self.guiInfoFcn)
-            elif "mangatraders.biz" in url:
-                self.guiInfoFcn('Detected mangatraders.biz url')
-                self.webpage_model = MangatradersModel(url, self.guiInfoFcn)
             else:
                 logger.debug('Unsupported url!')
                 self.guiInfoFcn('Unsupported url!')

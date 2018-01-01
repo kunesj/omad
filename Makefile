@@ -77,6 +77,3 @@ test_mangafox:
 
 test_batoto:
 	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='batoto'
-
-test_mangatraders:
-	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='mangatraders'

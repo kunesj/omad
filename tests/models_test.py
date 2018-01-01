@@ -8,22 +8,18 @@ from omad.download_controller import DownloadController
 
 from omad.mangafox_model import MangafoxModel
 from omad.batoto_model import BatotoModel
-from omad.mangatraders_model import MangatradersModel
 
 class ModelsTest(unittest.TestCase):
     # if error, always first check if urls are not bad
     # testchapters should have special non-ASCII characters in their names
 
     # mangafox shows all manga as licensed when viewed from USA
-    mangafox_series_url = 'http://mangafox.me/manga/0_0_mhz/' # needs to be korean/chinese comix to work on Travis
+    # needs to be korean/chinese comix to work on Travis
+    mangafox_series_url = 'http://mangafox.me/manga/0_0_mhz/'
     mangafox_chapter_index = 0
-
-    batoto_series_url = 'http://bato.to/comic/_/comics/fatekaleid-liner-prisma%E2%98%86illya-3rei-r7635' # special char in series name
-    batoto_chapter_index = 0 # http://bato.to/read/_/145348/fatekaleid-liner-prisma%E2%98%86illya-3rei_ch1_by_suimasen-scans
-
-    mangatraders_series_url = 'http://mangatraders.biz/series/FateKaleidLinerPrismaIllyaDrei' # slash in series name
-    mangatraders_chapter_index = 0 #
-
+    # only recently uploaded chapters are shown to not logged in user
+    batoto_series_url = 'https://bato.to/comic/_/comics/freezing-r43'
+    batoto_chapter_index = 0
 
     @attr(site='mangafox')
     def mangafox_test(self):
@@ -70,29 +66,5 @@ class ModelsTest(unittest.TestCase):
         # test chapter request exception
         mod = BatotoModel("http://bato.to", dc.guiInfoFcn)
         r = mod.downloadChapter(["bad_chapter", "http://bato.to/comic/_/comics/asdfgh"], './')
-
-        self.assertFalse(r)
-
-    @attr(site='mangatraders')
-    def mangatraders_test(self):
-        dc = DownloadController()
-
-        # test chapter list request
-        mod = MangatradersModel(self.mangatraders_series_url, dc.guiInfoFcn)
-        chapters = mod.getChaptersList()
-
-        # test chapter download
-        r = mod.downloadChapter(chapters[self.mangatraders_chapter_index], './')
-
-        # test if download was sucessfull
-        self.assertTrue(r)
-
-    @attr(site='mangatraders')
-    def mangatraders_test_bad_url(self):
-        dc = DownloadController()
-
-        # test chapter request exception
-        mod = MangatradersModel("http://mangatraders.org", dc.guiInfoFcn)
-        r = mod.downloadChapter(["bad_chapter", "http://mangatraders.org/manga/asdfgh"], './')
 
         self.assertFalse(r)

@@ -12,8 +12,8 @@ class OMADAppTest(unittest.TestCase):
     """
     Can only test if return codes
     """
-    mangatraders_series_url = 'http://mangatraders.biz/series/FateKaleidLinerPrismaIllyaDrei' # slash in series name
-    mangatraders_chapter_index = 0 #
+    series_url = 'http://mangafox.me/manga/0_0_mhz/'
+    chapter_index = 0
 
     def main_nogui_bad_args_test(self):
         print("--------------")
@@ -23,7 +23,7 @@ class OMADAppTest(unittest.TestCase):
         self.assertEqual(cm.exception.code, 2) # missing --url
 
         print("--------------")
-        sys.argv = [ sys.argv[0], '--nogui', '--url', self.mangatraders_series_url ]
+        sys.argv = [ sys.argv[0], '--nogui', '--url', self.series_url ]
         with self.assertRaises(SystemExit) as cm:
             main()
         self.assertEqual(cm.exception.code, 2) # missing --list or --range
@@ -35,13 +35,13 @@ class OMADAppTest(unittest.TestCase):
         self.assertEqual(cm.exception.code, 2) # bad url
 
         print("--------------")
-        sys.argv = [ sys.argv[0], '--nogui', '--url', self.mangatraders_series_url, '--range', '0', '1', '2' ]
+        sys.argv = [ sys.argv[0], '--nogui', '--url', self.series_url, '--range', '0', '1', '2' ]
         with self.assertRaises(SystemExit) as cm:
             main()
         self.assertEqual(cm.exception.code, 2) # too many range arguments
 
     def main_nogui_list_test(self):
-        sys.argv = [ sys.argv[0], '--nogui', '--url', self.mangatraders_series_url, '--list']
+        sys.argv = [ sys.argv[0], '--nogui', '--url', self.series_url, '--list']
         with self.assertRaises(SystemExit) as cm:
             main()
         self.assertEqual(cm.exception.code, 0)
@@ -53,7 +53,7 @@ class OMADAppTest(unittest.TestCase):
         self.assertEqual(cm.exception.code, 2)
 
     def main_nogui_download_test(self):
-        sys.argv = [ sys.argv[0], '--nogui', '--url', self.mangatraders_series_url, '--range', '0', '0']
+        sys.argv = [ sys.argv[0], '--nogui', '--url', self.series_url, '--range', '0', '0']
         with self.assertRaises(SystemExit) as cm:
             main()
         self.assertEqual(cm.exception.code, 0)

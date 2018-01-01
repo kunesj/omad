@@ -49,7 +49,7 @@ class MangafoxModel(SiteModel):
         processed_chapters = []
         for ch in chs:
             name = ch.text.replace('\n', ' ').strip()
-            href = ch.find('a').get('href')
+            href = "http:"+ch.find('a').get('href')
             processed_chapters.append([name, href])
 
         processed_chapters.reverse()

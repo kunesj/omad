@@ -9,7 +9,6 @@ from nose.plugins.attrib import attr
 from omad.download_controller import DownloadController
 
 from omad.mangafox_model import MangafoxModel
-from omad.batoto_model import BatotoModel
 
 class DownloadControllerTest(unittest.TestCase):
     # if error, always first check if urls are not bad
@@ -17,9 +16,7 @@ class DownloadControllerTest(unittest.TestCase):
 
     # mangafox shows all manga as licensed when viewed from USA
     # needs to be korean/chinese comix to work on Travis
-    mangafox_series_url = 'http://mangafox.me/manga/0_0_mhz/'
-    # only recently uploaded chapters are shown to not logged in user
-    batoto_series_url = 'https://bato.to/comic/_/comics/freezing-r43'
+    mangafox_series_url = 'http://fanfox.net/manga/0_0_mhz/'
 
     def select_url_bad_test(self):
         dc = DownloadController()
@@ -35,14 +32,6 @@ class DownloadControllerTest(unittest.TestCase):
 
         self.assertTrue(r)
         self.assertTrue( isinstance(dc.webpage_model, MangafoxModel) )
-
-    @attr(site='batoto')
-    def select_url_batoto_test(self):
-        dc = DownloadController()
-        r = dc.setSeriesUrl(self.batoto_series_url)
-
-        self.assertTrue(r)
-        self.assertTrue( isinstance(dc.webpage_model, BatotoModel) )
 
     def bad_series_url_test(self):
         dc = DownloadController()

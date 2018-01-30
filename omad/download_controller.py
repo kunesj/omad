@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 import traceback
 import os, sys
 
-from .batoto_model import BatotoModel
 from .mangafox_model import MangafoxModel
 
 class DownloadController():
@@ -71,10 +70,7 @@ class DownloadController():
         logger.debug('Set series url: '+url)
 
         try:
-            if ("bato.to" in url) or ("batoto.com" in url):
-                self.guiInfoFcn('Detected batoto url')
-                self.webpage_model = BatotoModel(url, self.guiInfoFcn)
-            elif ("mangafox.me" in url) or ("mangafox.li" in url):
+            if ("mangafox.me" in url) or ("mangafox.li" in url) or ("fanfox.net" in url):
                 self.guiInfoFcn('Detected mangafox url')
                 self.webpage_model = MangafoxModel(url, self.guiInfoFcn)
             else:

@@ -12,7 +12,7 @@ class OMADAppTest(unittest.TestCase):
     """
     Can only test if return codes
     """
-    series_url = 'http://mangafox.me/manga/0_0_mhz/'
+    series_url = 'http://fanfox.net/manga/0_0_mhz/'
     chapter_index = 0
 
     def main_nogui_bad_args_test(self):

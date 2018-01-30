@@ -75,5 +75,3 @@ test_all_coverage:
 test_mangafox:
 	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='mangafox'
 
-test_batoto:
-	PYTHONPATH=. nosetests3 -v --logging-level=INFO -a site='batoto'
